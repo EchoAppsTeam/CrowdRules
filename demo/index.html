@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+	<title>Echo::Apps::CrowdRules-Demo</title>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+</head>
+<body>
+	<div id="header"></div>
+	<div id="content"></div>
+	<div id="footer"></div>
+	<script type="text/javascript">
+
+		// get rid of appPrefix after uploading CrowdRules application on CDN
+		var appPrefix = "";
+
+		Echo.Loader.initApplication({
+			"script": appPrefix + "src/crowd-rules.js",
+			"component": "Echo.Apps.CrowdRules",
+			"backplane": {
+                                "serverBaseURL": "http://api.echoenabled.com/v1",
+                                "busName": "jskit"
+                        },
+			"config": {
+				"target": document.getElementById("content")
+			}
+		});
+
+	</script>
+</body>
+</html>
