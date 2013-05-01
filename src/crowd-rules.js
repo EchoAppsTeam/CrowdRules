@@ -68,7 +68,7 @@ CrowdRules.templates.main =
 	'</div>';
 
 CrowdRules.templates.query =
-	'{data:query} markers:"{data:marker}"';
+	'{data:query} markers:"alpha:{data:marker}"';
 
 CrowdRules.renderers.auth = function(element) {
 	var identityManagerItem = {
