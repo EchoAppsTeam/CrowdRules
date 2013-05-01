@@ -32,18 +32,24 @@ plugin.init = function() {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
-		var self = this;
+		var self = this, submit = this.component;
 		var valueOf = function(name) {
 			return self.view.get(name).val();
 		};
+		var businessName = valueOf("businessName");
+		var firstChar = businessName.charAt(0).toLowerCase();
+		var marker = /[a-z]/.test(firstChar) ? firstChar : "other";
 		var content =
 		'<div class="video-container">' +
-			'<div class="business-name">' + valueOf("businessName") + '</div>' +
-			'<div class="posted-by">Posted by: ' + self.component.user.get("name") + '</div>' +
+			'<div class="business-name">' + businessName + '</div>' +
+			'<div class="posted-by">Posted by: ' + submit.user.get("name") + '</div>' +
 			'<div class="video-embed-code">' + valueOf("videoURL") + '</div>' +
 			'<div class="video-description">' + valueOf("description") + '</div>' +
 		'</div>';
 		args.postData.content[0].object.content = content;
+		args.postData.content.push(
+			submit._getActivity("tag", submit._getASURL("marker"), "alpha:" + marker)
+		);
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var self = this;
