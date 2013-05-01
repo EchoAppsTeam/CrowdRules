@@ -29,15 +29,14 @@ CrowdRules.dependencies = [{
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }, {
-	"loaded": function() {
-		return Echo.Plugin.isDefined("Echo.StreamServer.Controls.Stream.Item.Vote");
-	},
+	"plugin": "Echo.StreamServer.Controls.Stream.Item.Vote",
 	"url": "{config:domainPrefix}/plugins/vote.js"
 }, {
-	"loaded": function() {
-		return Echo.Plugin.isDefined("Echo.StreamServer.Controls.Stream.AlphabeticalSorter");
-	},
+	"plugin": "Echo.StreamServer.Controls.Stream.AlphabeticalSorter",
 	"url": "{config:domainPrefix}/plugins/alphabetical-sorter.js"
+}, {
+	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
+	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
 }];
 
 CrowdRules.templates.main =
@@ -47,10 +46,24 @@ CrowdRules.templates.main =
 	'</div>';
 
 CrowdRules.renderers.submit = function(element) {
+	var identityManagerItem = {
+		"width": 400,
+		"height": 250,
+		"url": "https://" + this.config.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+	};
 	new Echo.StreamServer.Controls.Submit($.extend({
 		"target": element,
 		"appkey": this.config.get("appkey"),
-		"targetURL": this.config.get("targetURL")
+		"targetURL": this.config.get("targetURL"),
+		"plugins": [{
+			"name": "FormAuth",
+			"identityManager": {
+				"login": identityManagerItem,
+				"signup": identityManagerItem
+			}
+		}, {
+			"name": "CustomSubmitForm"
+		}]
 	}, this.config.get("submit")));
 	return element;
 };
