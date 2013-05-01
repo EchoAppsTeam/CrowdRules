@@ -13,6 +13,19 @@
 		// get rid of appPrefix after uploading CrowdRules application on CDN
 		var appPrefix = "";
 
+		var identityManager = {
+			"login": {
+				"width": 400,
+				"height": 250,
+				"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+			},
+			"signup": {
+				"width": 400,
+				"height": 250,
+				"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+			}
+		};
+
 		Echo.Loader.initApplication({
 			"script": appPrefix + "src/crowd-rules.js",
 			"component": "Echo.Apps.CrowdRules",
@@ -21,7 +34,14 @@
 				"busName": "jskit"
 			},
 			"config": {
-				"target": document.getElementById("content")
+				"target": document.getElementById("content"),
+				"appkey": "test.echoenabled.com",
+				"submit": {
+					"plugins": [{
+						"name": "FormAuth",
+						"identityManager": identityManager
+					}]
+				}
 			}
 		});
 
