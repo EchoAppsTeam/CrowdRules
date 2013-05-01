@@ -10,8 +10,8 @@
 	<div id="footer"></div>
 	<script type="text/javascript">
 
-		// get rid of appPrefix after uploading CrowdRules application on CDN
-		var appPrefix = "";
+		// get rid of domainPrefix after uploading CrowdRules application on CDN
+		var domainPrefix = "";
 
 		var identityManager = {
 			"login": {
@@ -27,13 +27,14 @@
 		};
 
 		Echo.Loader.initApplication({
-			"script": appPrefix + "src/crowd-rules.js",
+			"script": domainPrefix + "/crowd-rules.js",
 			"component": "Echo.Apps.CrowdRules",
 			"backplane": {
 				"serverBaseURL": "http://api.echoenabled.com/v1",
 				"busName": "jskit"
 			},
 			"config": {
+				"domainPrefix": domainPrefix,
 				"target": document.getElementById("content"),
 				"appkey": "test.echoenabled.com",
 				"submit": {

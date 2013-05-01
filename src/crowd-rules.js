@@ -28,6 +28,12 @@ CrowdRules.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
+}, {
+	"loaded": function() {
+		return Echo.Plugin.isDefined("Echo.StreamServer.Controls.Stream.Item.Vote");
+	},
+	// TODO: change the URL
+	"url": "{config:domainPrefix}/plugins/vote.js"
 }];
 
 CrowdRules.templates.main =
