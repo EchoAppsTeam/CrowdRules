@@ -18,11 +18,11 @@ CrowdRules.config = {
 };
 
 CrowdRules.dependencies = [{
-	"loaded": function() {
-		return Echo.Control.isDefined("Echo.StreamServer.Controls.Stream") &&
-			Echo.Control.isDefined("Echo.StreamServer.Controls.Subsmit");
-	},
+	"component": "Echo.StreamServer.Controls.Stream",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
+}, {
+	"component": "Echo.IdentityServer.Controls.Auth",
+	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }, {
 	"loaded": function() { return !!Echo.GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
@@ -41,27 +41,34 @@ CrowdRules.dependencies = [{
 
 CrowdRules.templates.main =
 	'<div class="{class:container}">' +
+		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:tabs}"></div>' +
 	'</div>';
 
-CrowdRules.renderers.submit = function(element) {
+CrowdRules.renderers.auth = function(element) {
 	var identityManagerItem = {
 		"width": 400,
 		"height": 250,
 		"url": "https://" + this.config.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 	};
+	new Echo.IdentityServer.Controls.Auth({
+		"target": element,
+		"appkey": this.config.get("appkey"),
+		"identityManager": {
+			"login": identityManagerItem,
+			"signup": identityManagerItem
+		}
+	});
+	return element;
+};
+
+CrowdRules.renderers.submit = function(element) {
 	new Echo.StreamServer.Controls.Submit($.extend({
 		"target": element,
 		"appkey": this.config.get("appkey"),
 		"targetURL": this.config.get("targetURL"),
 		"plugins": [{
-			"name": "FormAuth",
-			"identityManager": {
-				"login": identityManagerItem,
-				"signup": identityManagerItem
-			}
-		}, {
 			"name": "CustomSubmitForm"
 		}]
 	}, this.config.get("submit")));
