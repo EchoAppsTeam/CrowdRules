@@ -8,7 +8,7 @@ var CrowdRules = Echo.App.manifest("Echo.Apps.CrowdRules");
 if (Echo.App.isDefined("Echo.Apps.CrowdRules")) return;
 
 CrowdRules.vars = {
-	"stream": undefined
+	"query": ""
 };
 
 CrowdRules.config = {
@@ -24,6 +24,9 @@ CrowdRules.dependencies = [{
 	"component": "Echo.IdentityServer.Controls.Auth",
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }, {
+	"component": "Echo.CrowdRules.Controls.AlphabeticalSorter",
+	"url": "{config:domainPrefix}/controls/alphabetical-sorter.js"
+}, {
 	"loaded": function() { return !!Echo.GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
@@ -32,12 +35,30 @@ CrowdRules.dependencies = [{
 	"plugin": "Echo.StreamServer.Controls.Stream.Item.Vote",
 	"url": "{config:domainPrefix}/plugins/vote.js"
 }, {
-	"plugin": "Echo.StreamServer.Controls.Stream.AlphabeticalSorter",
-	"url": "{config:domainPrefix}/plugins/alphabetical-sorter.js"
-}, {
 	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
 	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
 }];
+
+CrowdRules.events = {
+	"Echo.CrowdRules.Controls.AlphabeticalSorter.onItemChoose": function(_, args) {
+		var self = this;
+		var stream = this.get("stream"), id = args.id;
+		if (stream && id) {
+			if (id === "all") {
+				stream.config.set("query", self.get("query"));
+			} else {
+				stream.config.set("query", self.substitute({
+					"template": CrowdRules.templates.query,
+					"data": {
+						"query": stream.config.get("query"),
+						"marker": args.id
+					}
+				}));
+			}
+			stream.refresh();
+		}
+	}
+};
 
 CrowdRules.templates.main =
 	'<div class="{class:container}">' +
@@ -45,6 +66,9 @@ CrowdRules.templates.main =
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:tabs}"></div>' +
 	'</div>';
+
+CrowdRules.templates.query =
+	'{data:query} markers:"{data:marker}"';
 
 CrowdRules.renderers.auth = function(element) {
 	var identityManagerItem = {
@@ -82,23 +106,59 @@ CrowdRules.renderers.tabs = function(element) {
 		"target": element,
 		"entries": $.map(metadata, function(entry) { return entry.visible && entry.tab }),
 		"show": function(tab, panel, id, index) {
-			var stream = self.get("stream");
-			var params = metadata[id].stream;
-			if (typeof stream === "undefined") {
-				new Echo.StreamServer.Controls.Stream($.extend({
-					"target": panel,
-					"appkey": self.config.get("appkey"),
-				}, this.config.get("stream"), params));
-			} else {
-				// TODO: replace it with extend-like functionality
-				$.each(params, function(key, value) {
-					stream.config.set(key, value);
-				});
-				stream.refresh();
-			}
+			self._toggleSorter(panel, metadata[id].sorter);
+			self._toggleStream(panel, metadata[id].stream);
 		}
 	});
 	return element;
+};
+
+CrowdRules.methods._toggleStream = function(container, config) {
+	var self = this, stream = this.get("stream");
+	if (typeof stream === "undefined") {
+		new Echo.StreamServer.Controls.Stream($.extend({
+			"target": $("<div>"),
+			"appkey": self.config.get("appkey"),
+			"ready": function() {
+				self.set("query", this.config.get("query"));
+				self.set("stream", this);
+				container.append(this.config.get("target"));
+			}
+		}, this.config.get("stream"), config));
+	} else {
+		container.append(stream.config.get("target"));
+		// TODO: replace it with extend-like functionality
+		$.each(config, function(key, value) {
+			stream.config.set(key, value);
+		});
+		stream.refresh();
+	}
+};
+
+// TODO: get rid of 'ifs'
+CrowdRules.methods._toggleSorter = function(container, config) {
+	var self = this, sorter = this.get("sorter");
+	if (typeof sorter === "undefined" && config.visible) {
+		new Echo.CrowdRules.Controls.AlphabeticalSorter({
+			"target": $("<div>"),
+			"context": this.config.get("context"),
+			"ready": function() {
+				self.set("sorter", this);
+				container.append(this.config.get("target"));
+			}
+		});
+		return;
+	}
+	if (sorter && config.visible) {
+		container.append(sorter.config.get("target"));
+		sorter.refresh();
+		return;
+	}
+	if (sorter && !config.visible) {
+		sorter.destroy();
+		this.remove("sorter");
+		return;
+	}
 };
 
 //TODO: introduce 'stage' parameter later
@@ -106,6 +166,9 @@ CrowdRules.methods._getTabsMetadata = function() {
 	return {
 		"contestans": {
 			"visible": true,
+			"sorter": {
+				"visible": true
+			},
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved",
 				"item": {"reTag": false},
@@ -115,8 +178,6 @@ CrowdRules.methods._getTabsMetadata = function() {
 					"name": "Reply"
 				}, {
 					"name": "Vote"
-				}, {
-					"name": "AlphabeticalSorter"
 				}]
 			},
 			"tab": {
@@ -126,13 +187,14 @@ CrowdRules.methods._getTabsMetadata = function() {
 		},
 		"constentants-curation": {
 			"visible": this.user.is("admin"),
+			"sorter": {
+				"visible": true
+			},
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
 				"item": {"reTag": false},
 				"plugins": [{
 					"name": "Moderation"
-				}, {
-					"name": "AlphabeticalSorter"
 				}]
 			},
 			"tab": {
@@ -143,6 +205,7 @@ CrowdRules.methods._getTabsMetadata = function() {
 		// TODO: complete this tab's metadata later
 		"finalists": {
 			"visible": false,
+			"sorter": false,
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL"),
 				"plugins": []
