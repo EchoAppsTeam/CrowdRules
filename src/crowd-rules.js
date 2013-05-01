@@ -83,13 +83,13 @@ CrowdRules.methods._getTabsMetadata = function() {
 		"contestans": {
 			"visible": true,
 			"stream": {
-				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved children state: ModeratorApproved",
+				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved",
 				"plugins": [{
-					"name": "Like"
-				}, {
 					"name": "Moderation"
 				}, {
 					"name": "Reply"
+				}, {
+					"name": "Vote"
 				}]
 			},
 			"tab": {
