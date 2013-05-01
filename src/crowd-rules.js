@@ -32,8 +32,12 @@ CrowdRules.dependencies = [{
 	"loaded": function() {
 		return Echo.Plugin.isDefined("Echo.StreamServer.Controls.Stream.Item.Vote");
 	},
-	// TODO: change the URL
 	"url": "{config:domainPrefix}/plugins/vote.js"
+}, {
+	"loaded": function() {
+		return Echo.Plugin.isDefined("Echo.StreamServer.Controls.Stream.AlphabeticalSorter");
+	},
+	"url": "{config:domainPrefix}/plugins/alphabetical-sorter.js"
 }];
 
 CrowdRules.templates.main =
