@@ -7,6 +7,10 @@ var CrowdRules = Echo.App.manifest("Echo.Apps.CrowdRules");
 
 if (Echo.App.isDefined("Echo.Apps.CrowdRules")) return;
 
+CrowdRules.vars = {
+	"stream": undefined
+};
+
 CrowdRules.config = {
 	"submit": {},
 	"stream": {},
@@ -43,27 +47,76 @@ CrowdRules.renderers.submit = function(element) {
 
 CrowdRules.renderers.tabs = function(element) {
 	var self = this;
+	var metadata = this._getTabsMetadata();
 	new Echo.GUI.Tabs({
 		"target": element,
-		"entries": [{
-			"id": "contestants",
-			"label": "Contestants",
-		}, {
-			"id": "constentans-curation",
-			"label": "Constentants Curation",
-		}, {
-			"id": "finalists",
-			"label": "Finalists"
-		}],
+		"entries": $.map(metadata, function(entry) { return entry.visible && entry.tab }),
 		"show": function(tab, panel, id, index) {
-			new Echo.StreamServer.Controls.Stream($.extend({
-				"target": panel,
-				"appkey": self.config.get("appkey"),
-				"query": "childrenof: " + self.config.get("targetURL")
-			}, this.config.get("stream")));
+			var stream = self.get("stream");
+			var params = metadata[id].stream;
+			if (typeof stream === "undefined") {
+				new Echo.StreamServer.Controls.Stream($.extend({
+					"target": panel,
+					"appkey": self.config.get("appkey"),
+				}, this.config.get("stream"), params));
+			} else {
+				// TODO: replace it with extend-like functionality
+				$.each(params, function(key, value) {
+					stream.config.set(key, value);
+				});
+				stream.refresh();
+			}
 		}
 	});
 	return element;
+};
+
+//TODO: introduce 'stage' parameter later
+CrowdRules.methods._getTabsMetadata = function() {
+	return {
+		"contestans": {
+			"visible": true,
+			"stream": {
+				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved children state: ModeratorApproved",
+				"plugins": [{
+					"name": "Like"
+				}, {
+					"name": "Moderation"
+				}, {
+					"name": "Reply"
+				}]
+			},
+			"tab": {
+				"id": "contestans",
+				"label": "Constentans"
+			}
+		},
+		"constentants-curation": {
+			"visible": true,
+			"stream": {
+				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+				"plugins": [{
+					"name": "Moderation"
+				}]
+			},
+			"tab": {
+				"id": "constentants-curation",
+				"label": "Constentants-Curation"
+			}
+		},
+		// TODO: complete this tab's metadata later
+		"finalists": {
+			"visible": false,
+			"stream": {
+				"query": "childrenof: " + this.config.get("targetURL"),
+				"plugins": []
+			},
+			"tab": {
+				"id": "finalists",
+				"label": "Finalists"
+			}
+		}
+	}
 };
 
 CrowdRules.css = "";
