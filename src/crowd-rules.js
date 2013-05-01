@@ -108,6 +108,7 @@ CrowdRules.methods._getTabsMetadata = function() {
 			"visible": true,
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved",
+				"item": {"reTag": false},
 				"plugins": [{
 					"name": "Moderation"
 				}, {
@@ -127,6 +128,7 @@ CrowdRules.methods._getTabsMetadata = function() {
 			"visible": this.user.is("admin"),
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+				"item": {"reTag": false},
 				"plugins": [{
 					"name": "Moderation"
 				}, {
