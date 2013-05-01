@@ -114,6 +114,8 @@ CrowdRules.methods._getTabsMetadata = function() {
 					"name": "Reply"
 				}, {
 					"name": "Vote"
+				}, {
+					"name": "AlphabeticalSorter"
 				}]
 			},
 			"tab": {
@@ -122,11 +124,13 @@ CrowdRules.methods._getTabsMetadata = function() {
 			}
 		},
 		"constentants-curation": {
-			"visible": true,
+			"visible": this.user.is("admin"),
 			"stream": {
 				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
 				"plugins": [{
 					"name": "Moderation"
+				}, {
+					"name": "AlphabeticalSorter"
 				}]
 			},
 			"tab": {
