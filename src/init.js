@@ -10,7 +10,7 @@ Echo.Loader.initApplication({
 	},
 	"config": {
 		"domainPrefix": domainPrefix,
-		"target": document.getElementById("content"),
+		"target": document.getElementById("echo-crowd-rules-app-content"),
 		"appkey": "test.echoenabled.com",
 		"rpxAppName": "echo.rpxnow.com"
 	}
