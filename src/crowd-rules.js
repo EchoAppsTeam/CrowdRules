@@ -8,13 +8,22 @@ var CrowdRules = Echo.App.manifest("Echo.Apps.CrowdRules");
 if (Echo.App.isDefined("Echo.Apps.CrowdRules")) return;
 
 CrowdRules.vars = {
-	"query": ""
+	"query": "",
+	"metadata": {}
 };
 
 CrowdRules.config = {
 	"submit": {},
 	"stream": {},
-	"targetURL": "http://example.com/crowdrules"
+	"finalistMarker": "Finalist",
+	"targetURL": "http://example.com/crowdrules",
+	"stageIndex": 0
+};
+
+CrowdRules.init = function() {
+	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
+	this.render();
+	this.ready();
 };
 
 CrowdRules.dependencies = [{
@@ -65,6 +74,12 @@ CrowdRules.events = {
 
 CrowdRules.templates.main =
 	'<div class="{class:container}">' +
+		// control for testing purposes, get rid of it asap
+		'<div class="{class:test}">' +
+			'<input class="{class:stage}" value="{config:stageIndex}" type="text" />' +
+			'<button class="{class:chooseStage}">Choose stage</button>' +
+		'</div>' +
+		// end of test control
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:tabs}"></div>' +
@@ -72,6 +87,15 @@ CrowdRules.templates.main =
 
 CrowdRules.templates.query =
 	'{data:query} markers:"alpha:{data:marker}"';
+
+// test control render, get rid of it asap
+CrowdRules.renderers.chooseStage = function(element) {
+	var self = this;
+	return element.on("click", function() {
+		self.config.set("stageIndex", self.view.get("stage").val());
+		self.refresh();
+	});
+};
 
 CrowdRules.renderers.auth = function(element) {
 	var identityManagerItem = {
@@ -91,7 +115,8 @@ CrowdRules.renderers.auth = function(element) {
 };
 
 CrowdRules.renderers.submit = function(element) {
-	new Echo.StreamServer.Controls.Submit($.extend({
+	var metadata = this.get("metadata")["submit"];
+	metadata.visible && new Echo.StreamServer.Controls.Submit($.extend({
 		"target": element,
 		"appkey": this.config.get("appkey"),
 		"targetURL": this.config.get("targetURL"),
@@ -104,7 +129,7 @@ CrowdRules.renderers.submit = function(element) {
 
 CrowdRules.renderers.tabs = function(element) {
 	var self = this;
-	var metadata = this._getTabsMetadata();
+	var metadata = this.get("metadata")["tabs"];
 	new Echo.GUI.Tabs({
 		"target": element,
 		"entries": $.map(metadata, function(entry) { return entry.visible && entry.tab }),
@@ -165,64 +190,153 @@ CrowdRules.methods._toggleSorter = function(container, config) {
 	}
 };
 
-//TODO: introduce 'stage' parameter later
-CrowdRules.methods._getTabsMetadata = function() {
-	return {
-		"contestans": {
-			"visible": true,
-			"sorter": {
-				"visible": true
-			},
-			"stream": {
-				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
-					"sortOrder:likesDescending ",
-				"item": {"reTag": false},
-				"plugins": [{
-					"name": "Moderation"
-				}, {
-					"name": "Reply"
-				}, {
-					"name": "Vote"
-				}, {
-					"name": "MarkerButton"
-				}]
-			},
-			"tab": {
-				"id": "contestans",
-				"label": "Constentans"
-			}
+CrowdRules.methods._getMetadata = function() {
+	return [{
+// Stage 0
+"tabs": {
+	"contestans": {
+		"visible": true,
+		"sorter": {
+			"visible": true
 		},
-		"constentants-curation": {
-			"visible": this.user.is("admin"),
-			"sorter": {
-				"visible": true
-			},
-			"stream": {
-				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
-				"item": {"reTag": false},
-				"plugins": [{
-					"name": "Moderation"
-				}]
-			},
-			"tab": {
-				"id": "constentants-curation",
-				"label": "Constentants-Curation"
-			}
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
+				"sortOrder:likesDescending ",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}, {
+				"name": "Reply"
+			}, {
+				"name": "Vote"
+			}]
 		},
-		// TODO: complete this tab's metadata later
-		"finalists": {
-			"visible": false,
-			"sorter": false,
-			"stream": {
-				"query": "childrenof: " + this.config.get("targetURL"),
-				"plugins": []
-			},
-			"tab": {
-				"id": "finalists",
-				"label": "Finalists"
-			}
+		"tab": {
+			"id": "contestans",
+			"label": "Constentans"
+		}
+	},
+	"constentants-curation": {
+		"visible": this.user.is("admin"),
+		"sorter": {
+			"visible": true
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}]
+		},
+		"tab": {
+			"id": "constentants-curation",
+			"label": "Constentants-Curation"
 		}
 	}
+},
+"submit": {
+	"visible": true
+}
+// End of Stage0
+}, {
+// Stage 1
+"tabs": {
+	"contestans": {
+		"visible": true,
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
+				"sortOrder:likesDescending ",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Vote",
+				"readOnly": true
+			}, {
+				"name": "Moderation"
+			}, {
+				"name": "Reply"
+			}, {
+				"name": "MarkerButton",
+				"marker": this.config.get("finalistMarker")
+			}]
+		},
+		"tab": {
+			"id": "contestans",
+			"label": "Constentans"
+		}
+	},
+	"constentants-curation": {
+		"visible": false, // should we display Curation on Stage 1 ?
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}, {
+				"name": "Vote",
+				"readOnly": true
+			}]
+		},
+		"tab": {
+			"id": "constentants-curation",
+			"label": "Constentants-Curation"
+		}
+	},
+	"finalists": {
+		"visible": this.user.is("admin"),
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " markers: " + this.config.get("finalistMarker"),
+			"plugins": [{
+				"name": "MarkerButton",
+				"marker": this.config.get("finalistMarker")
+			}, {
+				"name": "Vote",
+				"readOnly": true
+			}]
+		},
+		"tab": {
+			"id": "finalists",
+			"label": "Finalists"
+		}
+	}
+},
+"submit": {
+	"visible": false
+}
+// End of Stage 1
+}, {
+// Stage 2
+"tabs": {
+	"finalists": {
+		"visible": true,
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " markers: " + this.config.get("finalistMarker"),
+			"plugins": [{
+				"name": "Vote"
+			}]
+		},
+		"tab": {
+			"id": "finalists",
+			"label": "Finalists"
+		}
+	}
+},
+"submit": {
+	"visible": false
+}
+// End of Stage 2
+}];
 };
 
 CrowdRules.css =
