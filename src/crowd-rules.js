@@ -200,7 +200,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
 				"sortOrder:likesDescending ",
 			"item": {"reTag": false},
 			"plugins": [{
@@ -213,7 +213,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "contestans",
-			"label": "Constentans"
+			"label": "Contestants"
 		}
 	},
 	"constentants-curation": {
@@ -222,7 +222,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:permissive",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -230,7 +230,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "constentants-curation",
-			"label": "Constentants-Curation"
+			"label": "Contestants Curation"
 		}
 	}
 },
@@ -247,7 +247,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
 				"sortOrder:likesDescending ",
 			"item": {"reTag": false},
 			"plugins": [{
@@ -264,7 +264,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "contestans",
-			"label": "Constentans"
+			"label": "Contestants"
 		}
 	},
 	"constentants-curation": {
@@ -273,7 +273,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:permissive",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -284,7 +284,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "constentants-curation",
-			"label": "Constentants-Curation"
+			"label": "Contestants Curation"
 		}
 	},
 	"finalists": {
@@ -293,7 +293,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " markers: " + this.config.get("finalistMarker"),
+			"query": "childrenof: " + this.config.get("targetURL") + " safeHTML:permissive markers: " + this.config.get("finalistMarker"),
 			"plugins": [{
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -321,7 +321,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " markers: " + this.config.get("finalistMarker"),
+			"query": "childrenof: " + this.config.get("targetURL") + " safeHTML:permissive markers: " + this.config.get("finalistMarker"),
 			"plugins": [{
 				"name": "Vote"
 			}]
