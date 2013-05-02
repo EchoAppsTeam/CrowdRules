@@ -7,10 +7,16 @@ var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Control
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.config = {
+	"videoMaxWidth": 250 // in px
+};
+
 plugin.labels = {
 	"businessNameHint": "Your Business name",
 	"videoURLHint": "Your video URL",
 	"descriptionHint": "Description of the Business",
+	"processingMedia": "Processing media link. Please wait...",
+	"noMediaFound": "No media content was detected. The link will be displayed as is."
 };
 
 plugin.init = function() {
@@ -43,7 +49,7 @@ plugin.events = {
 		'<div class="video-container">' +
 			'<div class="business-name">' + businessName + '</div>' +
 			'<div class="posted-by">Posted by: ' + submit.user.get("name") + '</div>' +
-			'<div class="video-embed-code">' + valueOf("videoURL") + '</div>' +
+			'<div class="video-embed-code">' + self.get("mediaContent", "") + '</div>' +
 			'<div class="video-description">' + valueOf("description") + '</div>' +
 		'</div>';
 		args.postData.content[0].object.content = content;
@@ -57,19 +63,21 @@ plugin.events = {
 		$.map(["businessName", "videoURL", "description"], function(name) {
 			self.view.render({"name": name});
 		});
+		this.set("mediaContent", "");
+		this.view.get("videoPreview").hide();
 	}
 };
 
 plugin.template =
 	'<div class="{class:container}">' +
-		'<div>' +
+		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:businessName} {plugin.class:input}" type="text">' +
 		'</div>' +
-		'<div>' +
+		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:videoURL} {plugin.class:input}" type="text">' +
 		'</div>' +
 		'<div class="{plugin.class:videoPreview}"></div>' +
-		'<div>' +
+		'<div class="{plugin.class:inputContainer}">' +
 			'<textarea class="{plugin.class:description} {plugin.class:input}"></textarea>' +
 		'</div>' +
 
@@ -106,7 +114,38 @@ plugin.renderers.businessName = function(element) {
 };
 
 plugin.renderers.videoURL = function(element) {
-	return this._putHint(element, "videoURL");
+	var self = this;
+	this._putHint(element, "videoURL");
+	element.bind({"blur": function() {
+		var link = $.trim(element.val());
+		var preview = self.view.get("videoPreview");
+		// do not resolve the same link twice
+		if (!link) {
+			preview.empty().hide();
+			return;
+		}
+		if (self.get("lastProcessedLink") === link) return;
+		self.set("lastProcessedLink", link);
+		preview.show().html('<span>' + self.labels.get("processingMedia") + '</span>');
+		$.get("http://api.embed.ly/1/oembed", {
+			"url": link,
+			"maxwidth": self.config.get("videoMaxWidth"),
+			"format": "json"
+		}, function(response) {
+			preview.empty();
+			response = response || {};
+			switch (response.type) {
+				case "video":
+					self.set("mediaContent", response.html);
+					preview.append(response.html);
+					break;
+				default:
+					self.set("mediaContent", link);
+					preview.append('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('noMediaFound') + '</span>');
+			}
+		}, "jsonp");
+	}});
+	return element;
 };
 
 plugin.renderers.description = function(element) {
@@ -121,7 +160,12 @@ plugin.methods._putHint = function(element, label) {
 };
 
 plugin.css =
-	'.{class:postContainer} { float: left; margin-bottom: 20px; }';
+	'.echo-sdk-ui .echo-streamserver-controls-submit-mandatory { border: 1px solid red; }' +
+	'.{class:postContainer} { float: left; margin-bottom: 20px; }' +
+	'.echo-sdk-ui input[type="text"].{plugin.class:input}, .echo-sdk-ui textarea.{plugin.class:input} { outline: 0 !important; box-shadow: none !important; padding: 0px; margin: 0px; border: 0px; width: 100%; }' +
+	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #DDDDDD; }' +
+	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
+	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }';
 
 Echo.Plugin.create(plugin);
 
