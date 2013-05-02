@@ -50,7 +50,7 @@ CrowdRules.events = {
 				stream.config.set("query", self.substitute({
 					"template": CrowdRules.templates.query,
 					"data": {
-						"query": stream.config.get("query"),
+						"query": self.get("query"),
 						"marker": args.id
 					}
 				}));
@@ -132,6 +132,7 @@ CrowdRules.methods._toggleStream = function(container, config) {
 			stream.config.set(key, value);
 		});
 		stream.refresh();
+		this.set("query", stream.config.get("query"));
 	}
 };
 
@@ -170,7 +171,8 @@ CrowdRules.methods._getTabsMetadata = function() {
 				"visible": true
 			},
 			"stream": {
-				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved",
+				"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved " +
+					"sortOrder:likesDescending ",
 				"item": {"reTag": false},
 				"plugins": [{
 					"name": "Moderation"
