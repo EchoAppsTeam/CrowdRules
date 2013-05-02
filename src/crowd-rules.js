@@ -220,7 +220,8 @@ CrowdRules.methods._getTabsMetadata = function() {
 	}
 };
 
-CrowdRules.css = "";
+CrowdRules.css =
+	'.{class:tabs} > ul.nav { margin-bottom: 0px; }';
 
 Echo.App.create(CrowdRules);
 

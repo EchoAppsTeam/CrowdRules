@@ -1,4 +1,3 @@
-// TODO: all strings should be place in the labels!
 (function(jQuery) {
 "use strict";
 
@@ -12,9 +11,14 @@ var sorter = Echo.Control.manifest("Echo.CrowdRules.Controls.AlphabeticalSorter"
 
 if (Echo.Control.isDefined(sorter)) return;
 
+sorter.labels = {
+	"allItems": "ALL",
+	"othersItems": "OTHERS"
+};
+
 sorter.vars = {
 	"items": [],
-	"currentItemId": ""
+	"activeItemId": ""
 };
 
 sorter.init = function() {
@@ -25,13 +29,20 @@ sorter.init = function() {
 
 sorter.templates.main =
 	'<div class="{class:container}">' +
-		'<div id="all" class="{class:allItems}">ALL</div>' +
-		'<div class="{class:items}"></div>' +
-		'<div id="other" class="{class:otherItems}">OTHER</div>' +
+		'<div class="{class:subcontainer}">' +
+			'<div id="all" class="echo-clickable {class:item} {class:allItems}">{label:allItems}</div>' +
+			'<div id="others" class="echo-clickable {class:item} {class:othersItems}">{label:othersItems}</div>' +
+			'<div class="{class:items}"></div>' +
+			'<div class="echo-clear"></div>' +
+		'</div>' +
 	'</div>';
 
+sorter.templates.items =
+	'<div class="{class:sortItemsContainer}"></div>' +
+	'<div class="echo-clear"></div>';
+
 sorter.templates.item =
-	'<span id="{data:id}" class="{class:item}"> {data:title} </span>';
+	'<div id="{data:id}" class="echo-clickable {class:item} {class:sortItem}">{data:title}</div>';
 
 sorter.renderers.allItems = function(element) {
 	var self = this;
@@ -42,7 +53,7 @@ sorter.renderers.allItems = function(element) {
 		});
 };
 
-sorter.renderers.otherItems = function(element) {
+sorter.renderers.othersItems = function(element) {
 	var self = this;
 	return element
 		.off("click")
@@ -52,28 +63,45 @@ sorter.renderers.otherItems = function(element) {
 };
 
 sorter.renderers.items = function(element) {
-	var self = this;
+	return element
+		.empty()
+		.append(this.view.fork().render({
+			"template": sorter.templates.items
+		}));
+};
+
+sorter.renderers.sortItemsContainer = function(element) {
+	var self = this, view = this.view.fork();
 	element.empty();
 	$.map(this.get("items"), function(item) {
-		if (!~$.inArray(item.id, ["all", "other"])) {
-			// TODO: can we use view.fork() there (instead of substitute) ?
-			element.append($(self.substitute({
+		if (!~$.inArray(item.id, ["all", "others"])) {
+			element.append(view.render({
 				"template": sorter.templates.item,
 				"data": item
-			})).off("click").on("click", function() {
-				self._itemClickHandler($(this).attr("id"));
 			}));
 		}
 	});
 	return element;
 };
 
+sorter.renderers.sortItem = function(element) {
+	var self = this;
+	return element
+		.css({
+			"width": (1 / (this.get("items").length - 2) * 100) + "%"
+		})
+		.off("click")
+		.on("click", function() {
+			self._itemClickHandler($(this).attr("id"));
+		});
+};
+
 sorter.methods._itemClickHandler = function(clickedItemId) {
 	var self = this;
-	if (this.get("currentItemId") !== clickedItemId) {
+	if (this.get("activeItemId") !== clickedItemId) {
 		$.each(this.get("items"), function(key, item) {
 			if (item.id === clickedItemId) {
-				self.set("currentItemId", item.id);
+				self.set("activeItemId", item.id);
 				item["handler"].call(item);
 				return false;
 			}
@@ -90,8 +118,8 @@ sorter.methods._assembleItems = function() {
 		});
 	};
 	items.push({
-		"id": "all",
-		"title": "ALL",
+		"id": this.labels.get("allItems").toLowerCase(),
+		"title": this.labels.get("allItems"),
 		"handler": handler
 	});
 	for (var i = 97; i <= 122; i++) {
@@ -103,19 +131,26 @@ sorter.methods._assembleItems = function() {
 		});
 	};
 	items.push({
-		"id": "other",
-		"title": "OTHER",
+		"id": this.labels.get("othersItems").toLowerCase(),
+		"title": this.labels.get("othersItems"),
 		"handler": handler
 	});
 	this.set("items", items);
-	this.set("currentItemId", "all");
+	this.set("activeItemId", "all");
 };
 
-sorter.css = '';
-/*	'.{class:allItems} { float: left; }' +
-	'.{class:items} { float: left; }' +
-	'.{class:otherItems} { float: left; }';
-*/
+sorter.css =
+	// common containers
+	'.{class:container} { line-height: 40px; padding: 10px; }' +
+	'.{class:subcontainer} { overflow: hidden; width: 90%; }' +
+	// item styles
+	'.{class:item} { font: 10px Arial; text-align: center; float: left; color: #0088CC; }' +
+	'.{class:activeItem} { color: #555555; }' +
+	// items containers
+	'.{class:items} { margin: 0px 80px 0px 60px; }' +
+	'.{class:othersItems} { width: 70px; float: right; border-left: 1px solid #0088CC; }' +
+	'.{class:allItems} { float: left; width: 50px; border-right: 1px solid #0088CC; }';
+
 Echo.Control.create(sorter);
 
 })(Echo.jQuery);
