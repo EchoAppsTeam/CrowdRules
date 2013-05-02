@@ -35,6 +35,9 @@ CrowdRules.dependencies = [{
 	"plugin": "Echo.StreamServer.Controls.Stream.Item.Vote",
 	"url": "{config:domainPrefix}/plugins/vote.js"
 }, {
+	"plugin": "Echo.StreamServer.Controls.Stream.Item.MarkerButton",
+	"url": "{config:domainPrefix}/plugins/marker-button.js"
+}, {
 	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
 	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
 }];
@@ -180,6 +183,8 @@ CrowdRules.methods._getTabsMetadata = function() {
 					"name": "Reply"
 				}, {
 					"name": "Vote"
+				}, {
+					"name": "MarkerButton"
 				}]
 			},
 			"tab": {
