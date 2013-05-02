@@ -7,6 +7,10 @@ var plugin = Echo.Plugin.manifest("Vote", "Echo.StreamServer.Controls.Stream.Ite
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.config = {
+	"readOnly": false // if 'readOnly' is true then user cannot vote
+};
+
 plugin.labels = {};
 
 plugin.init = function() {
@@ -28,7 +32,7 @@ plugin.templates.main =
 plugin.renderers.vote = function(element) {
 	var self = this, item = this.component;
 	element.off("click");
-	if (!item.user.is("logged") || this._hasVoted()) {
+	if (!item.user.is("logged") || this._hasVoted() || this.config.get("readOnly")) {
 		return element.css({"opacity": 0.3});
 	}
 	return element.on("click", function() {
@@ -39,7 +43,7 @@ plugin.renderers.vote = function(element) {
 plugin.renderers.unvote = function(element) {
 	var self = this, item = this.component;
 	element.off("click");
-	if (!item.user.is("logged") || !this._hasVoted()) {
+	if (!item.user.is("logged") || !this._hasVoted() || this.config.get("readOnly")) {
 		return element.css({"opacity": 0.3});
 	}
 	return element.on("click", function() {
