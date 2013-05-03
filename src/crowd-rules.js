@@ -288,7 +288,7 @@ CrowdRules.methods._getMetadata = function() {
 				"name": "Moderation"
 			}, {
 				"name": "Vote",
-				"readOnly": true,
+				"readOnly": true
 			}, {
 				"name": "VideoContent"
 			}]
@@ -334,28 +334,6 @@ CrowdRules.methods._getMetadata = function() {
 		"tab": {
 			"id": "contestans",
 			"label": "Contestants"
-		}
-	},
-	"constentants-curation": {
-		"visible": false, // should we display Curation on Stage 1 ?
-		"sorter": {
-			"visible": false
-		},
-		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:off",
-			"item": {"reTag": false},
-			"plugins": [{
-				"name": "Moderation"
-			}, {
-				"name": "Vote",
-				"readOnly": true
-			}, {
-				"name": "VideoContent"
-			}]
-		},
-		"tab": {
-			"id": "constentants-curation",
-			"label": "Contestants Curation"
 		}
 	},
 	"finalists": {
