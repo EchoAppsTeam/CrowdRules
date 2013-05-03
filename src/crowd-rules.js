@@ -85,16 +85,16 @@ CrowdRules.dependencies = [{
 CrowdRules.events = {
 	"Echo.CrowdRules.Controls.AlphabeticalSorter.onItemChoose": function(_, args) {
 		var self = this;
-		var stream = this.get("stream"), id = args.id;
-		if (stream && id) {
-			if (id === "all") {
+		var stream = this.get("stream"), key = args.key;
+		if (stream && key) {
+			if (key === "all") {
 				stream.config.set("query", self.get("query"));
 			} else {
 				stream.config.set("query", self.substitute({
 					"template": CrowdRules.templates.query,
 					"data": {
 						"query": self.get("query"),
-						"marker": args.id
+						"marker": key
 					}
 				}));
 			}
@@ -418,6 +418,7 @@ CrowdRules.methods._getMetadata = function() {
 
 CrowdRules.css =
 	'.{class:container} { padding: 20px; }' +
+	'.{class:tabs} { margin-top: 10px; }' +
 	'.{class:container} .echo-streamserver-controls-stream-header{ display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +

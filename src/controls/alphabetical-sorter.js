@@ -18,7 +18,7 @@ sorter.labels = {
 
 sorter.vars = {
 	"items": [],
-	"activeItemId": ""
+	"activeItem": ""
 };
 
 sorter.init = function() {
@@ -30,8 +30,8 @@ sorter.init = function() {
 sorter.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:subcontainer}">' +
-			'<div id="all" class="echo-clickable {class:item} {class:allItems}">{label:allItems}</div>' +
-			'<div id="others" class="echo-clickable {class:item} {class:othersItems}">{label:othersItems}</div>' +
+			'<div id="{class:item-all}" class="echo-clickable {class:item} {class:allItems}">{label:allItems}</div>' +
+			'<div id="{class:item-others}" class="echo-clickable {class:item} {class:othersItems}">{label:othersItems}</div>' +
 			'<div class="{class:items}"></div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
@@ -46,10 +46,12 @@ sorter.templates.item =
 
 sorter.renderers.allItems = function(element) {
 	var self = this;
+	this.set("activeItem", element);
 	return element
+		.addClass(this.cssPrefix + "activeItem")
 		.off("click")
 		.on("click", function() {
-			self._itemClickHandler($(this).attr("id"));
+			self._itemClickHandler($(this));
 		});
 };
 
@@ -58,7 +60,7 @@ sorter.renderers.othersItems = function(element) {
 	return element
 		.off("click")
 		.on("click", function() {
-			self._itemClickHandler($(this).attr("id"));
+			self._itemClickHandler($(this));
 		});
 };
 
@@ -74,7 +76,7 @@ sorter.renderers.sortItemsContainer = function(element) {
 	var self = this, view = this.view.fork();
 	element.empty();
 	$.map(this.get("items"), function(item) {
-		if (!~$.inArray(item.id, ["all", "others"])) {
+		if (!~$.inArray(item.id, [self._constructItemId("all"), self._constructItemId("others")])) {
 			element.append(view.render({
 				"template": sorter.templates.item,
 				"data": item
@@ -92,16 +94,18 @@ sorter.renderers.sortItem = function(element) {
 		})
 		.off("click")
 		.on("click", function() {
-			self._itemClickHandler($(this).attr("id"));
+			self._itemClickHandler($(this));
 		});
 };
 
-sorter.methods._itemClickHandler = function(clickedItemId) {
-	var self = this;
-	if (this.get("activeItemId") !== clickedItemId) {
+sorter.methods._itemClickHandler = function(clickedItem) {
+	var self = this, activeItem = this.get("activeItem");
+	if (this.get("activeItem").attr("id") !== clickedItem.attr("id")) {
 		$.each(this.get("items"), function(key, item) {
-			if (item.id === clickedItemId) {
-				self.set("activeItemId", item.id);
+			if (item.id === clickedItem.attr("id")) {
+				self.get("activeItem").removeClass(self.cssPrefix + "activeItem");
+				self.set("activeItem", clickedItem);
+				clickedItem.addClass(self.cssPrefix + "activeItem");
 				item["handler"].call(item);
 				return false;
 			}
@@ -118,25 +122,31 @@ sorter.methods._assembleItems = function() {
 		});
 	};
 	items.push({
-		"id": this.labels.get("allItems").toLowerCase(),
+		"id": this._constructItemId(this.labels.get("allItems").toLowerCase()),
+		"key": this.labels.get("allItems").toLowerCase(),
 		"title": this.labels.get("allItems"),
 		"handler": handler
 	});
 	for (var i = 97; i <= 122; i++) {
 		var key = String.fromCharCode(i);
 		items.push({
-			"id": key,
+			"id": this._constructItemId(key),
+			"key": key,
 			"title": key.toUpperCase(),
 			"handler": handler
 		});
 	};
 	items.push({
-		"id": this.labels.get("othersItems").toLowerCase(),
+		"id": this._constructItemId(this.labels.get("othersItems").toLowerCase()),
+		"key": this.labels.get("otherItems").toLowerCase(),
 		"title": this.labels.get("othersItems"),
 		"handler": handler
 	});
 	this.set("items", items);
-	this.set("activeItemId", "all");
+};
+
+sorter.methods._constructItemId = function(id) {
+	return this.cssPrefix + "item-" + id;
 };
 
 sorter.css =
@@ -144,12 +154,14 @@ sorter.css =
 	'.{class:container} { line-height: 40px; padding: 10px; border-bottom: 1px solid #dddddd; }' +
 	'.{class:subcontainer} { overflow: hidden; }' +
 	// item styles
-	'.{class:item} { font: 10px Arial; text-align: center; float: left; color: #0088CC; }' +
-	'.{class:activeItem} { color: #555555; }' +
+	'.{class:item} { font: 10px Arial; font-weight: normal; text-align: center; float: left; color: #0088CC; text-decoration: none; }' +
+	'.{class:item}:hover { text-decoration: underline; }' +
+	'.{class:activeItem} { color: #555555; font-weight: bold; }' +
+	'.{class:activeItem}:hover { text-decoration: none; }' +
 	// items containers
 	'.{class:items} { margin: 0px 80px 0px 60px; }' +
-	'.{class:othersItems} { width: 70px; float: right; border-left: 1px solid #0088CC; }' +
-	'.{class:allItems} { float: left; width: 50px; border-right: 1px solid #0088CC; }';
+	'.{class:othersItems} { width: 70px; float: right; border-left: 1px solid #dddddd; }' +
+	'.{class:allItems} { float: left; width: 50px; border-right: 1px solid #dddddd; }';
 
 Echo.Control.create(sorter);
 
