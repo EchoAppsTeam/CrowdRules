@@ -98,11 +98,11 @@ plugin.templates.main =
 	'</div>';
 
 plugin.templates.content =
-	'<div class="video-container">' +
-		'<div class="business-name echo-linkColor">{data:businessName}</div>' +
-		'<div class="posted-by">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
-		'<div class="video-embed-code">{data:media}</div>' +
-		'<div class="video-description">{data:description}</div>' +
+	'<div class="{plugin.class:video-container}">' +
+		'<div class="{plugin.class:business-name} echo-linkColor">{data:businessName}</div>' +
+		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
+		'<div class="{plugin.class:video-embed-code}">{data:media}</div>' +
+		'<div class="{plugin.class:video-description}">{data:description}</div>' +
 	'</div>';
 
 plugin.component.renderers.name =
