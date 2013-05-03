@@ -9,19 +9,38 @@ if (Echo.App.isDefined("Echo.Apps.CrowdRules")) return;
 
 CrowdRules.vars = {
 	"query": "",
+	"route": null,
 	"metadata": {}
 };
 
 CrowdRules.config = {
 	"submit": {},
 	"stream": {},
+	"route": {
+		"prefix": "!",
+		"path": "",
+		"local": {
+			"prefix": "/CrowdRules",
+			"path": "/demo"
+		}
+	},
 	"finalistMarker": "Finalist",
 	"targetURL": "http://example.com/crowdrules",
 	"stageIndex": 0
 };
 
+CrowdRules.config.normalizer = {
+	"route": function(route) {
+		if (route.local) {
+			route.prefix = (route.prefix || "") + route.local.prefix;
+		}
+		return route;
+	}
+};
+
 CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
+	this._initRouter();
 	this.render();
 	this.ready();
 };
@@ -52,6 +71,15 @@ CrowdRules.dependencies = [{
 }, {
 	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
 	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
+}, {
+	"plugin": "Echo.StreamServer.Controls.Stream.Item.Plugins.VideoContent",
+	"url": "{config:domainPrefix}/plugins/item-video-content.js"
+}, {
+	"component": "Echo.URLObserver",
+	"url": "{config:domainPrefix}/url-observer.js"
+}, {
+	"component": "Echo.Router",
+	"url": "{config:domainPrefix}/router.js"
 }];
 
 CrowdRules.events = {
@@ -72,6 +100,9 @@ CrowdRules.events = {
 			}
 			stream.refresh();
 		}
+	},
+	"onRouteChange": function(topic, params) {
+		this.router.applyRoute(params.route);
 	}
 };
 
@@ -90,6 +121,9 @@ CrowdRules.templates.main =
 
 CrowdRules.templates.query =
 	'{data:query} markers:"alpha:{data:marker}"';
+
+CrowdRules.templates.permalinkPage = 
+	'<div class="{class:permalonkStream}"></div>';
 
 // test control render, get rid of it asap
 CrowdRules.renderers.chooseStage = function(element) {
@@ -142,6 +176,27 @@ CrowdRules.renderers.tabs = function(element) {
 		}
 	});
 	return element;
+};
+
+CrowdRules.routes = {};
+
+CrowdRules.routes.video = {
+	"spec": "/video/{id}",
+	"handler": function(params) {
+		this.showVideo(params.id);
+	}
+};
+
+CrowdRules.methods._initRouter = function() {
+	this.router = new Echo.Router({
+		"widget": this,
+		"config": {
+			"route": $.extend({
+				"path": Echo.URLObserver.getFragment()
+			}, this.config.get("route")),
+			"routes": this._manifest("routes")
+		}
+	});
 };
 
 CrowdRules.methods._toggleStream = function(container, config) {
@@ -203,7 +258,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off " +
 				"sortOrder:likesDescending ",
 			"item": {"reTag": false},
 			"plugins": [{
@@ -212,6 +267,8 @@ CrowdRules.methods._getMetadata = function() {
 				"name": "Reply"
 			}, {
 				"name": "Vote"
+			}, {
+				"name": "VideoContent"
 			}]
 		},
 		"tab": {
@@ -225,13 +282,15 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:permissive",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:off",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
 			}, {
 				"name": "Vote",
-				"readOnly": true
+				"readOnly": true,
+			}, {
+				"name": "VideoContent"
 			}]
 		},
 		"tab": {
@@ -253,7 +312,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off" +
 				"sortOrder:likesDescending ",
 			"item": {"reTag": false},
 			"plugins": [{
@@ -268,11 +327,35 @@ CrowdRules.methods._getMetadata = function() {
 			}, {
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
+			}, {
+				"name": "VideoContent"
 			}]
 		},
 		"tab": {
 			"id": "contestans",
 			"label": "Contestants"
+		}
+	},
+	"constentants-curation": {
+		"visible": false, // should we display Curation on Stage 1 ?
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:off",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}, {
+				"name": "Vote",
+				"readOnly": true
+			}, {
+				"name": "VideoContent"
+			}]
+		},
+		"tab": {
+			"id": "constentants-curation",
+			"label": "Contestants Curation"
 		}
 	},
 	"finalists": {
@@ -281,7 +364,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers: " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off markers: " +
 				this.config.get("finalistMarker") + " sortOrder:likesDescending",
 			"plugins": [{
 				"name": "MarkerButton",
@@ -289,6 +372,8 @@ CrowdRules.methods._getMetadata = function() {
 			}, {
 				"name": "Vote",
 				"readOnly": true
+			}, {
+				"name": "VideoContent"
 			}]
 		},
 		"tab": {
@@ -310,10 +395,12 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:permissive markers: " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:off markers: " +
 				this.config.get("finalistMarker") + " sortOrder:likesDescending ",
 			"plugins": [{
 				"name": "Vote"
+			}, {
+				"name": "VideoContent"
 			}]
 		},
 		"tab": {

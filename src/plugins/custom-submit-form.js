@@ -45,16 +45,12 @@ plugin.events = {
 		var businessName = valueOf("businessName");
 		var firstChar = businessName.charAt(0).toLowerCase();
 		var marker = /[a-z]/.test(firstChar) ? firstChar : "other";
-		var content = self.substitute({
-			"template": plugin.templates.content,
-			"data": {
-				"businessName": businessName,
-				"user": submit.user.get("name"),
-				"media": self.get("mediaContent", ""),
-				"description": valueOf("description")
-			}
+		args.postData.content[0].object.content = Echo.Utils.objectToJSON({
+			"businessName": businessName,
+			"user": submit.user.get("name"),
+			"media": self.get("mediaContent", ""),
+			"description": valueOf("description")
 		});
-		args.postData.content[0].object.content = content;
 		args.postData.content.push(
 			submit._getActivity("tag", submit._getASURL("marker"), "alpha:" + marker)
 		);
@@ -95,14 +91,6 @@ plugin.templates.main =
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
-	'</div>';
-
-plugin.templates.content =
-	'<div class="{plugin.class:video-container}">' +
-		'<div class="{plugin.class:business-name} echo-linkColor">{data:businessName}</div>' +
-		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
-		'<div class="{plugin.class:video-embed-code}">{data:media}</div>' +
-		'<div class="{plugin.class:video-description}">{data:description}</div>' +
 	'</div>';
 
 plugin.component.renderers.name =

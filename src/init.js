@@ -1,5 +1,5 @@
 // get rid of domainPrefix after uploading CrowdRules application on CDN
-var domainPrefix = "";
+var domainPrefix = "http://localhost:8000/CrowdRules/src";
 
 Echo.Loader.initApplication({
 	"script": domainPrefix + "/crowd-rules.js",
