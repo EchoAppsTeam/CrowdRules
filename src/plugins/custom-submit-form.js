@@ -23,7 +23,7 @@ plugin.init = function() {
 	var self = this;
 
 	// replace the whole template
-	this.extendTemplate("replace", "container", plugin.template)
+	this.extendTemplate("replace", "container", plugin.templates.main);
 
 	// define validators for the newly added fields
 	this.component.addPostValidator(function() {
@@ -45,13 +45,15 @@ plugin.events = {
 		var businessName = valueOf("businessName");
 		var firstChar = businessName.charAt(0).toLowerCase();
 		var marker = /[a-z]/.test(firstChar) ? firstChar : "other";
-		var content =
-		'<div class="video-container">' +
-			'<div class="business-name">' + businessName + '</div>' +
-			'<div class="posted-by">Posted by: ' + submit.user.get("name") + '</div>' +
-			'<div class="video-embed-code">' + self.get("mediaContent", "") + '</div>' +
-			'<div class="video-description">' + valueOf("description") + '</div>' +
-		'</div>';
+		var content = self.substitute({
+			"template": plugin.templates.content,
+			"data": {
+				"businessName": businessName,
+				"user": submit.user.get("name"),
+				"media": self.get("mediaContent", ""),
+				"description": valueOf("description")
+			}
+		});
 		args.postData.content[0].object.content = content;
 		args.postData.content.push(
 			submit._getActivity("tag", submit._getASURL("marker"), "alpha:" + marker)
@@ -68,7 +70,7 @@ plugin.events = {
 	}
 };
 
-plugin.template =
+plugin.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:businessName} {plugin.class:input}" type="text">' +
@@ -93,6 +95,14 @@ plugin.template =
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
+	'</div>';
+
+plugin.templates.content =
+	'<div class="video-container">' +
+		'<div class="business-name echo-linkColor">{data:businessName}</div>' +
+		'<div class="posted-by">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
+		'<div class="video-embed-code">{data:media}</div>' +
+		'<div class="video-description">{data:description}</div>' +
 	'</div>';
 
 plugin.component.renderers.name =

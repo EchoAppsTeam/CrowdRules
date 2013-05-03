@@ -73,6 +73,7 @@ $.map(["_sendActivity", "_sendRequest", "_publishEventComplete"], function(metho
 });
 
 plugin.css =
+	'.{plugin.class:container} { width: 48px; }' +
 	'.{plugin.class:vote} { text-align: center; }' +
 	'.{plugin.class:unvote} { text-align: center; }' +
 	'.{plugin.class:votesCount} { text-align: center; }';

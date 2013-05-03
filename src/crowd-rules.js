@@ -345,6 +345,9 @@ CrowdRules.methods._getMetadata = function() {
 };
 
 CrowdRules.css =
+	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .business-name { font: 16px Arial; line-height: 18px; font-weight: bold; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }';
 
 Echo.App.create(CrowdRules);
