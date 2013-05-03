@@ -15,7 +15,11 @@ CrowdRules.vars = {
 
 CrowdRules.config = {
 	"submit": {},
-	"stream": {},
+	"stream": {
+		"labels": {
+			"emptyStream": "No videos at this time..."
+		}
+	},
 	"route": {
 		"prefix": "!",
 		"path": "",
