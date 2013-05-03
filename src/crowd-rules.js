@@ -91,16 +91,15 @@ CrowdRules.events = {
 		var self = this;
 		var stream = this.get("stream"), key = args.key;
 		if (stream && key) {
+			var query = self.get("query");
 			if (key === "all") {
-				stream.config.set("query", self.get("query"));
+				stream.config.set("query", query);
 			} else {
-				stream.config.set("query", self.substitute({
-					"template": CrowdRules.templates.query,
-					"data": {
-						"query": self.get("query"),
-						"marker": key
-					}
-				}));
+				// TODO: more flexible solution is needed
+				stream.config.set("query", query.replace(
+					"children:1",
+					"markers:\"alpha:" + key + "\" children:1"
+				));
 			}
 			stream.refresh();
 		}
@@ -122,9 +121,6 @@ CrowdRules.templates.main =
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:tabs}"></div>' +
 	'</div>';
-
-CrowdRules.templates.query =
-	'{data:query} markers:"alpha:{data:marker}"';
 
 CrowdRules.templates.permalinkPage = 
 	'<div class="{class:permalonkStream}"></div>';
@@ -263,7 +259,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"stream": {
 			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off " +
-				"sortOrder:likesDescending ",
+				"sortOrder:likesDescending children:1",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -286,7 +282,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:off",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:off children:1",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -316,8 +312,8 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off" +
-				"sortOrder:likesDescending ",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off " +
+				"sortOrder:likesDescending children:1",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "WithoutMore"
@@ -347,7 +343,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"stream": {
 			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:off markers: " +
-				this.config.get("finalistMarker") + " sortOrder:likesDescending",
+				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
 			"plugins": [{
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -378,7 +374,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"stream": {
 			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:off markers: " +
-				this.config.get("finalistMarker") + " sortOrder:likesDescending ",
+				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
 			"plugins": [{
 				"name": "Vote"
 			}, {
