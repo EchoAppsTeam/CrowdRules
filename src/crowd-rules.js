@@ -47,6 +47,9 @@ CrowdRules.dependencies = [{
 	"plugin": "Echo.StreamServer.Controls.Stream.Item.MarkerButton",
 	"url": "{config:domainPrefix}/plugins/marker-button.js"
 }, {
+	"plugin": "Echo.StreamServer.Controls.Stream.WithoutMore",
+	"url": "{config:domainPrefix}/plugins/without-more.js"
+}, {
 	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
 	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
 }];
@@ -251,6 +254,8 @@ CrowdRules.methods._getMetadata = function() {
 				"sortOrder:likesDescending ",
 			"item": {"reTag": false},
 			"plugins": [{
+				"name": "WithoutMore"
+			}, {
 				"name": "Vote",
 				"readOnly": true
 			}, {
