@@ -229,6 +229,9 @@ CrowdRules.methods._getMetadata = function() {
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
+			}, {
+				"name": "Vote",
+				"readOnly": true
 			}]
 		},
 		"tab": {
@@ -346,9 +349,12 @@ CrowdRules.methods._getMetadata = function() {
 
 CrowdRules.css =
 	'.{class:container} { padding: 20px; }' +
+	'.{class:container} .echo-streamserver-controls-stream-header{ display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-submit-plugin-CustomSubmitForm-business-name { font: 16px Arial; line-height: 18px; font-weight: bold; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }';
 
 Echo.App.create(CrowdRules);

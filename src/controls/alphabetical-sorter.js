@@ -141,8 +141,8 @@ sorter.methods._assembleItems = function() {
 
 sorter.css =
 	// common containers
-	'.{class:container} { line-height: 40px; padding: 10px; }' +
-	'.{class:subcontainer} { overflow: hidden; width: 90%; }' +
+	'.{class:container} { line-height: 40px; padding: 10px; border-bottom: 1px solid #dddddd; }' +
+	'.{class:subcontainer} { overflow: hidden; }' +
 	// item styles
 	'.{class:item} { font: 10px Arial; text-align: center; float: left; color: #0088CC; }' +
 	'.{class:activeItem} { color: #555555; }' +
