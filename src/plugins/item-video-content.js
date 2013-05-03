@@ -9,18 +9,27 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.component.renderers.text = function(element) {
 	var text = this.component.get("data.object.content");
-	var data;
+	var data, el, self = this;
 	// FIXME: remove try/catch before production init
 	try {
 		data = $.parseJSON(text);
+		el = $(this.substitute({
+			"template": plugin.templates.content,
+			"data": data
+		}));
+		$(this.substitute({"template": ".{plugin.class:business-name}"}), el).click(function() {
+			self.events.publish({
+				"topic": "onPermalinkOpen",
+				"data": {
+					"item": self.component
+				}
+			});
+		});
 	} catch (ex) {
 	}
 	return element.empty().append(
 		data
-			? $(this.substitute({
-				"template": plugin.templates.content,
-				"data": data
-			}))
+			? el
 			: text
 	);
 };
@@ -34,7 +43,7 @@ plugin.templates.content =
 	'</div>';
 
 plugin.css =
-	'.{plugin.class:business-name} { font: 16px Arial; line-height: 18px; font-weight: bold; }' +
+	'.{plugin.class:business-name} { font: 16px Arial; line-height: 18px; font-weight: bold; cursor: pointer; }' +
 	'.{plugin.class:posted-by} { line-height: 16px; }' +
 	'.{plugin.class:embed-code} { margin: 3px 0px; }';
 

@@ -31,6 +31,7 @@ Echo.Router.prototype.navigate = function(route, options) {
 	} else {
 		Echo.Events.publish({
 			"topic": "onRouteChange",
+			"context": this.config.context || "global",
 			"data": {
 				"route": route
 			}

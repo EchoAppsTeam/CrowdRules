@@ -21,12 +21,7 @@ CrowdRules.config = {
 		}
 	},
 	"route": {
-		"prefix": "!",
-		"path": "",
-		"local": {
-			"prefix": "/CrowdRules",
-			"path": "/demo"
-		}
+		"prefix": "!"
 	},
 	"finalistMarker": "Finalist",
 	"targetURL": "http://example.com/crowdrules",
@@ -104,6 +99,13 @@ CrowdRules.events = {
 			stream.refresh();
 		}
 	},
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.VideoContent.onPermalinkOpen": function(topic, args) {
+		var stream = this.get("stream");
+		var item = stream.items[args.item.data.unique];
+		var id = stream._getItemListIndex(item, stream.threads);
+		this.permalinkPage = id ? stream.threads[id - 1].get("data.pageAfter") : 0;
+		this.router.navigate("/video/" + item.get("data.object.id").replace(/[^\d-]+/g, ""));
+	},
 	"onRouteChange": function(topic, params) {
 		this.router.applyRoute(params.route);
 	}
@@ -167,7 +169,7 @@ CrowdRules.renderers.submit = function(element) {
 CrowdRules.renderers.tabs = function(element) {
 	var self = this;
 	var metadata = this.get("metadata")["tabs"];
-	new Echo.GUI.Tabs({
+	this.tabs = new Echo.GUI.Tabs({
 		"target": element,
 		"entries": $.map(metadata, function(entry) { return entry.visible && entry.tab }),
 		"show": function(tab, panel, id, index) {
@@ -183,14 +185,37 @@ CrowdRules.routes = {};
 CrowdRules.routes.video = {
 	"spec": "/video/{id}",
 	"handler": function(params) {
-		this.showVideo(params.id);
+		this.showVideo(this.permalinkPage);
 	}
+};
+
+CrowdRules.methods.showVideo = function(id) {
+	var panel = this.tabs.config.get("panels").children(".active");
+	var query = this.get("stream").config.get("query");
+	var plugins = this.get("stream").config.get("plugins");
+	var pluginsOrder = this.get("stream").config.get("pluginsOrder");
+	plugins.WithoutMore = {
+		"name": "WithoutMore"
+	};
+	pluginsOrder.push({
+		"name": "WithoutMore"
+	});
+	query = query.replace(/itemsPerPage:\d+/, "itemsPerPage:1");
+	this.view.get("submit").hide();
+	this.tabs.tabsContainer.hide();
+	this.get("sorter").config.get("target").hide();
+	this._toggleStream(panel, {
+		"query": query + (id ? (" pageAfter:" + id) : ""),
+		"plugins": plugins,
+		"pluginOrder": pluginsOrder
+	});
 };
 
 CrowdRules.methods._initRouter = function() {
 	this.router = new Echo.Router({
 		"widget": this,
 		"config": {
+			"context": this.config.get("context"),
 			"route": $.extend({
 				"path": Echo.URLObserver.getFragment()
 			}, this.config.get("route")),
@@ -205,6 +230,7 @@ CrowdRules.methods._toggleStream = function(container, config) {
 		new Echo.StreamServer.Controls.Stream($.extend({
 			"target": $("<div>"),
 			"appkey": self.config.get("appkey"),
+			"context": this.config.get("context"),
 			"ready": function() {
 				self.set("query", this.config.get("query"));
 				self.set("stream", this);
