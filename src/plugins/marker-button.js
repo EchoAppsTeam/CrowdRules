@@ -35,6 +35,7 @@ plugin.methods._assembleButton = function() {
 			"target-query": item.config.get("parent.query")
 		}, function(response) {
 			// publish onComplete event if it's necessary
+			self.requestDataRefresh();
 		}, function(response) {
 			// publish onError event if it's necessary
 		});
