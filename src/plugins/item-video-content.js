@@ -34,7 +34,9 @@ plugin.templates.content =
 	'</div>';
 
 plugin.css =
-	'{plugin.class:business-name} { font: 16px Arial; line-height: 18px; font-weight: bold; }'
+	'.{plugin.class:business-name} { font: 16px Arial; line-height: 18px; font-weight: bold; }' +
+	'.{plugin.class:posted-by} { line-height: 16px; }' +
+	'.{plugin.class:embed-code} { margin: 3px 0px; }';
 
 Echo.Plugin.create(plugin);
 
