@@ -275,33 +275,14 @@ CrowdRules.methods._getMetadata = function() {
 			"label": "Contestants"
 		}
 	},
-	"constentants-curation": {
-		"visible": false, // should we display Curation on Stage 1 ?
-		"sorter": {
-			"visible": false
-		},
-		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:permissive",
-			"item": {"reTag": false},
-			"plugins": [{
-				"name": "Moderation"
-			}, {
-				"name": "Vote",
-				"readOnly": true
-			}]
-		},
-		"tab": {
-			"id": "constentants-curation",
-			"label": "Contestants Curation"
-		}
-	},
 	"finalists": {
 		"visible": this.user.is("admin"),
 		"sorter": {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " safeHTML:permissive markers: " + this.config.get("finalistMarker"),
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers: " +
+				this.config.get("finalistMarker") + " sortOrder:likesDescending",
 			"plugins": [{
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -329,7 +310,8 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " safeHTML:permissive markers: " + this.config.get("finalistMarker"),
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:permissive markers: " +
+				this.config.get("finalistMarker") + " sortOrder:likesDescending ",
 			"plugins": [{
 				"name": "Vote"
 			}]
