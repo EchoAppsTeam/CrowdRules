@@ -34,6 +34,11 @@ CrowdRules.init = function() {
 		.on("hashchange", $.proxy(this.refresh, this));
 };
 
+CrowdRules.destroy = function() {
+	var stream = this.get("stream");
+	if (stream) stream.refresh();
+};
+
 CrowdRules.dependencies = [{
 	"component": "Echo.StreamServer.Controls.Stream",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
