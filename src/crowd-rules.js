@@ -120,6 +120,9 @@ CrowdRules.templates.main =
 		'</div>' +
 		// end of test control
 		'<div class="{class:auth}"></div>' +
+		'<div class="{class:submitToggleButtonContainer}">' +
+			'<div class="btn {class:submitToggleButton}">Enter the business</div>' +
+		'</div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:tabs}"></div>' +
 	'</div>';
@@ -133,6 +136,18 @@ CrowdRules.renderers.chooseStage = function(element) {
 	return element.on("click", function() {
 		self.config.set("stageIndex", self.view.get("stage").val());
 		self.refresh();
+	});
+};
+
+CrowdRules.renderers.submitToggleButton = function(element) {
+	var self = this;
+	return element.click(function() {
+		element.removeClass("active");
+		var container = self.view.get("submit");
+		container.toggle();
+		if (container.is(":visible")) {
+			element.addClass("active");
+		}
 	});
 };
 
@@ -425,6 +440,8 @@ CrowdRules.methods._getMetadata = function() {
 
 CrowdRules.css =
 	'.{class:container} { padding: 20px; }' +
+	'.{class:submit} { display: none; }' +
+	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal; }' +
 	'.{class:tabs} { margin-top: 10px; }' +
 	'.{class:container} .echo-streamserver-controls-stream-header{ display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
