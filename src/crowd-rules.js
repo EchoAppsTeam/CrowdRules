@@ -68,12 +68,6 @@ CrowdRules.dependencies = [{
 }, {
 	"plugin": "Echo.StreamServer.Controls.Stream.Item.Plugins.VideoContent",
 	"url": "{config:domainPrefix}/plugins/item-video-content.js"
-}, {
-	"component": "Echo.URLObserver",
-	"url": "{config:domainPrefix}/url-observer.js"
-}, {
-	"component": "Echo.Router",
-	"url": "{config:domainPrefix}/router.js"
 }];
 
 CrowdRules.events = {
