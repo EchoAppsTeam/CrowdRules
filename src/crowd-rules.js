@@ -102,26 +102,37 @@ CrowdRules.events = {
 };
 
 CrowdRules.methods.template = function() {
+	var self = this;
 	return this._manifest("templates")[
-		/video\/[\d-]+/.test(window.location.hash) ? "permalink": "main"
+		/video\/[\d-]+/.test(window.location.hash)
+			? "permalink" : (self.user.is("admin") ? "admin" : "user")
 	];
 };
 
-CrowdRules.templates.main =
+CrowdRules.templates.user =
 	'<div class="{class:container}">' +
-		// control for testing purposes, get rid of it asap
-		'<div class="{class:test}">' +
-			'<input class="{class:stage}" value="{config:stageIndex}" type="text" />' +
-			'<button class="{class:chooseStage}">Choose stage</button>' +
+		'<div class="{class:header}">' +
+			'<div class="{class:auth}"></div>' +
+			'<div class="{class:title}"></div>' +
+			'<div class="{class:submitToggleButtonContainer}">' +
+				'<div class="btn btn-mini {class:submitToggleButton}">Enter the business</div>' +
+			'</div>' +
+			'<div class="echo-clear"></div>' +
 		'</div>' +
-		// end of test control
-		'<div class="{class:auth}"></div>' +
-		'<div class="{class:submitToggleButtonContainer}">' +
-			'<div class="btn {class:submitToggleButton}">Enter the business</div>' +
+		'<div class="{class:userContent}">' +
+			'<div class="{class:submit}"></div>' +
+			'<div class="{class:content}"></div>' +
 		'</div>' +
-		'<div class="{class:submit}"></div>' +
-		'<div class="{class:tabs}"></div>' +
 	'</div>';
+
+CrowdRules.templates.admin =
+	'<div class="{class:container}">' +
+		'<div class="{class:adminContent}">' +
+			'<div class="{class:auth}" style="float: right;"></div>' +
+			'<div class="{class:tabs}"></div>' +
+		'</div>' +
+	'</div>';
+
 
 CrowdRules.templates.permalink =
 	'<div class="{class:container}">' +
@@ -131,20 +142,13 @@ CrowdRules.templates.permalink =
 		'<div class="{class:permalinkContainer}"></div>' +
 	'</div>';
 
-// test control render, get rid of it asap
-CrowdRules.renderers.chooseStage = function(element) {
-	var self = this;
-	return element.on("click", function() {
-		self.config.set("stageIndex", self.view.get("stage").val());
-		self.refresh();
-	});
-};
 
 CrowdRules.renderers.submitToggleButton = function(element) {
 	var self = this;
+	var metadata = this.get("metadata")["submit"];
 	element.off("click");
 	if (this.user.is("logged")) {
-		element.click(function() {
+		element.on("click", function() {
 			element.removeClass("active");
 			var container = self.view.get("submit");
 			container.toggle();
@@ -156,7 +160,7 @@ CrowdRules.renderers.submitToggleButton = function(element) {
 		element.addClass("disabled");
 		self.addAuthPopupLauncher(element);
 	}
-	return element;
+	return metadata.visible ? element : element.hide();
 };
 
 CrowdRules.methods.addAuthPopupLauncher = function(element) {
@@ -226,6 +230,29 @@ CrowdRules.renderers.submit = function(element) {
 	return element;
 };
 
+CrowdRules.renderers.title = function(element) {
+	var metadata = this.get("metadata")["tabs"];
+	element.empty();
+	// TODO: more flexible solution to fetch data is needed
+	$.each(metadata, function(key, entry) {
+		element.append(entry.tab.label);
+		return false;
+	});
+	return element;
+};
+
+CrowdRules.renderers.content = function(element) {
+	var self = this, metadata = this.get("metadata")["tabs"];
+	element.empty();
+	// TODO: more flexible solution to fetch data is needed
+	$.each(metadata, function(key, entry) {
+		self._toggleSorter(element, entry.sorter);
+		self._toggleStream(element, entry.stream);
+		return false;
+	});
+	return element;
+};
+
 CrowdRules.renderers.tabs = function(element) {
 	var self = this;
 	var metadata = this.get("metadata")["tabs"];
@@ -278,7 +305,6 @@ CrowdRules.methods._toggleStream = function(container, config) {
 	}
 };
 
-// TODO: get rid of 'ifs'
 CrowdRules.methods._toggleSorter = function(container, config) {
 	var self = this, sorter = this.get("sorter");
 	if (typeof sorter === "undefined" && config.visible) {
@@ -389,7 +415,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "contestans",
-			"label": "Contestants"
+			"label": "Top 10 Contestants"
 		}
 	},
 	"finalists": {
@@ -398,8 +424,8 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers: " +
-				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 safeHTML:off markers: " + this.config.get("finalistMarker") + 
+				" sortOrder:likesDescending children:1",
 			"plugins": [{
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -429,7 +455,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:permissive markers: " +
+			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:off markers: " + 
 				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
 			"plugins": [{
 				"name": "Vote"
@@ -451,17 +477,25 @@ CrowdRules.methods._getMetadata = function() {
 };
 
 CrowdRules.css =
-	'.{class:container} { padding: 20px; }' +
-	'.{class:submit} { display: none; }' +
-	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal; }' +
-	'.{class:tabs} { margin-top: 10px; }' +
+	'.{class:container} { padding: 20px; margin-bottom: 50px; }' +
+	'.{class:submit} { display: none; margin-bottom: 10px; }' +
+	'.{class:auth} { float: right; }' +
+	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
+	'.{class:content} { border-top: 1px solid #dddddd; }' +
+	'.{class:userContent} { margin-top: 10px; }' +
+	// auth control styles
+	'.{class:container} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
+	'.{class:container} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
+	// stream control styles
 	'.{class:container} .echo-streamserver-controls-stream-header{ display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
+	// bootstrap components styles
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
-	'.{class:viewContestants} div { margin-left: 25px; }';
+	'.{class:viewContestants} div { margin-left: 25px; }' +
+	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal;  float: left; margin-left: 20px; }';
 
 Echo.App.create(CrowdRules);
 
