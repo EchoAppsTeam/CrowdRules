@@ -8,7 +8,8 @@ var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Control
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
-	"videoMaxWidth": 250 // in px
+	"videoMaxWidth": 250, // in px
+	"confirmationDisplayTimeout": 5000 // 5 sec
 };
 
 plugin.labels = {
@@ -16,7 +17,8 @@ plugin.labels = {
 	"videoURLHint": "Your video URL",
 	"descriptionHint": "Description of the Business",
 	"processingMedia": "Processing media link. Please wait...",
-	"noMediaFound": "No media content was detected. The link will be displayed as is."
+	"noMediaFound": "No media content was detected. The link will be displayed as is.",
+	"submitConfirmation": "Thanks, your video has been submitted for consideration."
 };
 
 plugin.init = function() {
@@ -63,18 +65,25 @@ plugin.events = {
 		);
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		var self = this;
+		var self = this, confirmation = this.view.get("confirmation");
 		// reset fields after successful submission...
 		$.map(["businessName", "videoURL", "description"], function(name) {
 			self.view.render({"name": name});
 		});
 		this.set("mediaContent", "");
 		this.view.get("videoPreview").hide();
+		confirmation.show();
+		setTimeout(function() {
+			confirmation.hide();
+		}, this.config.get("confirmationDisplayTimeout"));
 	}
 };
 
 plugin.templates.main =
 	'<div class="{class:container}">' +
+		'<div class="alert alert-success {plugin.class:confirmation}">' +
+			'{plugin.label:submitConfirmation}' +
+		'</div>' +
 		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:businessName} {plugin.class:input}" type="text">' +
 		'</div>' +
@@ -163,6 +172,9 @@ plugin.css =
 	'.echo-sdk-ui .echo-streamserver-controls-submit-mandatory { border: 1px solid red; }' +
 	'.echo-sdk-ui input[type="text"].{plugin.class:input}, .echo-sdk-ui textarea.{plugin.class:input} { outline: 0 !important; box-shadow: none !important; padding: 0px; margin: 0px; border: 0px; width: 100%; }' +
 	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #DDDDDD; }' +
+	'.echo-sdk-ui .{plugin.class:confirmation}.alert { font-weight: bold; margin: 10px 0px; }' +
+	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; }' +
+	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
 	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }';
 
