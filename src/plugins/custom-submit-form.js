@@ -25,6 +25,13 @@ plugin.init = function() {
 	// replace the whole template
 	this.extendTemplate("replace", "container", plugin.templates.main);
 
+	// validator to define non-empty values for the name and text values
+	this.component.addPostValidator(function() {
+		self.component.view.get("name").val("-");
+		self.component.view.get("text").val("-");
+		return true;
+	}, "high");
+
 	// define validators for the newly added fields
 	this.component.addPostValidator(function() {
 		var valid = true;
@@ -92,11 +99,6 @@ plugin.templates.main =
 			'<div class="echo-clear"></div>' +
 		'</div>' +
 	'</div>';
-
-plugin.component.renderers.name =
-plugin.component.renderers.text = function(element) {
-	return element.val("-"); // define fake value to pass validations
-};
 
 plugin.component.renderers.postButton = function(element) {
 	this.parentRenderer("postButton", arguments);
