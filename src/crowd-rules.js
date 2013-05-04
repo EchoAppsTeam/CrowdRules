@@ -26,6 +26,10 @@ CrowdRules.config = {
 	"stageIndex": 0
 };
 
+CrowdRules.labels = {
+	"viewContestants": "View all contestants"
+};
+
 CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
 	this.render();
@@ -99,7 +103,7 @@ CrowdRules.events = {
 
 CrowdRules.methods.template = function() {
 	return this._manifest("templates")[
-		window.location.hash ? "permalink": "main"
+		/video\/[\d-]+/.test(window.location.hash) ? "permalink": "main"
 	];
 };
 
@@ -120,7 +124,12 @@ CrowdRules.templates.main =
 	'</div>';
 
 CrowdRules.templates.permalink =
-	'<div class="{class:permalinkContainer}"></div>';
+	'<div class="{class:container}">' +
+		'<div class="{class:viewContestants}">' +
+			'<div class="btn">{label:viewContestants}</div>' +
+		'</div>' +
+		'<div class="{class:permalinkContainer}"></div>' +
+	'</div>';
 
 // test control render, get rid of it asap
 CrowdRules.renderers.chooseStage = function(element) {
@@ -171,6 +180,12 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 		"query": "url:http://example.com/ECHO/item/" + id + " itemsPerPage:1 children:1"
 	}));
 	return element;
+};
+
+CrowdRules.renderers.viewContestants = function(element) {
+	return element.click(function() {
+		window.location.hash = "!";
+	});
 };
 
 CrowdRules.renderers.auth = function(element) {
@@ -445,7 +460,8 @@ CrowdRules.css =
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
-	'.{class:tabs} > ul.nav { margin-bottom: 0px; }';
+	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
+	'.{class:viewContestants} div { margin-left: 25px; }';
 
 Echo.App.create(CrowdRules);
 
