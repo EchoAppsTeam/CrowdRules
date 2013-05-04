@@ -8,7 +8,7 @@ var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Control
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
-	"videoMaxWidth": 250, // in px
+	"videoMaxWidth": 480, // in px
 	"confirmationDisplayTimeout": 5000 // 5 sec
 };
 
@@ -58,6 +58,9 @@ plugin.events = {
 			"businessName": businessName,
 			"user": submit.user.get("name"),
 			"media": self.get("mediaContent", ""),
+			"previewURL": self.get("previewURL", ""),
+			"videoWidth": self.config.get("videoMaxWidth"),
+			"previewWidth": self.get("previewWidth", ""),
 			"description": valueOf("description")
 		});
 		args.postData.content.push(
@@ -145,6 +148,8 @@ plugin.renderers.videoURL = function(element) {
 			response = response || {};
 			switch (response.type) {
 				case "video":
+					self.set("previewURL", response.thumbnail_url);
+					self.set("previewWidth", response.thumbnail_width);
 					self.set("mediaContent", encodeURIComponent(response.html));
 					preview.append(response.html);
 					break;

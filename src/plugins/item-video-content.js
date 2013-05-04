@@ -7,6 +7,10 @@ var plugin = Echo.Plugin.manifest("VideoContent", "Echo.StreamServer.Controls.St
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.config = {
+	"previewMaxWidth": "480px"
+};
+
 plugin.component.renderers.text = function(element) {
 	var text = this.component.get("data.object.content");
 	var data, el, self = this;
@@ -15,10 +19,10 @@ plugin.component.renderers.text = function(element) {
 		data = $.parseJSON(text);
 		data.media = decodeURIComponent(data.media);
 		el = $(this.substitute({
-			"template": plugin.templates.content,
+			"template": plugin.templates.content(data.previewURL ? "preview" : "full"),
 			"data": data
 		}));
-		$(this.substitute({"template": ".{plugin.class:business-name}"}), el).click(function() {
+		$("." + this.cssPrefix + "business-name", el).click(function() {
 			self.events.publish({
 				"topic": "onPermalinkOpen",
 				"data": {
@@ -27,24 +31,33 @@ plugin.component.renderers.text = function(element) {
 				}
 			});
 		});
+		$("." + this.cssPrefix + "previewImg", el)
+			.css("max-width", self.config.get("previewMaxWidth"))
+			.click(function() {
+				var container = $(this).parent();
+				container.empty().append(data.media);
+			});
 	} catch (ex) {
 	}
-	return element.empty().append(
-		data ? el : text
-	);
+	return element.empty().append(data ? el : text);
 };
 
-plugin.templates.content =
-	'<div class="{plugin.class:container}">' +
+plugin.templates.content = function(mode) {
+	var embed = mode === "full"
+		? "{data:media}"
+		: '<img src="{data:previewURL}" class="{plugin.class:previewImg} echo-clickable" title="Click to play video">';
+	return '<div class="{plugin.class:container}">' +
 		'<div class="{plugin.class:business-name} echo-linkColor">{data:businessName}</div>' +
 		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
-		'<div class="{plugin.class:embed-code}">{data:media}</div>' +
+		'<div class="{plugin.class:embed-code}">' + embed + '</div>' +
 		'<div class="{plugin.class:description}">{data:description}</div>' +
 	'</div>';
+};
 
 plugin.css =
 	'.{plugin.class:business-name} { font: 16px Arial; line-height: 18px; font-weight: bold; cursor: pointer; }' +
-	'.{plugin.class:posted-by} { line-height: 16px; }' +
+	'.{plugin.class:posted-by} { line-height: 16px; margin: 3px 0px 7px 0px; }' +
+	'.{plugin.class:description} { margin: 10px 0px; }' +
 	'.{plugin.class:embed-code} { margin: 3px 0px; }';
 
 Echo.Plugin.create(plugin);
