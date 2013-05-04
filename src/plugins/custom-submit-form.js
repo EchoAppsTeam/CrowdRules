@@ -145,7 +145,7 @@ plugin.renderers.videoURL = function(element) {
 			response = response || {};
 			switch (response.type) {
 				case "video":
-					self.set("mediaContent", response.html);
+					self.set("mediaContent", encodeURIComponent(response.html));
 					preview.append(response.html);
 					break;
 				default:

@@ -13,6 +13,7 @@ plugin.component.renderers.text = function(element) {
 	// FIXME: remove try/catch before production init
 	try {
 		data = $.parseJSON(text);
+		data.media = decodeURIComponent(data.media);
 		el = $(this.substitute({
 			"template": plugin.templates.content,
 			"data": data
@@ -21,16 +22,15 @@ plugin.component.renderers.text = function(element) {
 			self.events.publish({
 				"topic": "onPermalinkOpen",
 				"data": {
-					"item": self.component
+					"item": self.component,
+					"context": self.component.config.get("context")
 				}
 			});
 		});
 	} catch (ex) {
 	}
 	return element.empty().append(
-		data
-			? el
-			: text
+		data ? el : text
 	);
 };
 
