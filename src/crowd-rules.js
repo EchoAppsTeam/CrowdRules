@@ -8,6 +8,8 @@ var CrowdRules = Echo.App.manifest("Echo.Apps.CrowdRules");
 if (Echo.App.isDefined("Echo.Apps.CrowdRules")) return;
 
 CrowdRules.vars = {
+	"auth": null,
+	"authWaitingQueue": [],
 	"query": "",
 	"metadata": {}
 };
@@ -132,14 +134,29 @@ CrowdRules.renderers.chooseStage = function(element) {
 
 CrowdRules.renderers.submitToggleButton = function(element) {
 	var self = this;
-	return element.click(function() {
-		element.removeClass("active");
-		var container = self.view.get("submit");
-		container.toggle();
-		if (container.is(":visible")) {
-			element.addClass("active");
-		}
-	});
+	element.off("click");
+	if (this.user.is("logged")) {
+		element.click(function() {
+			element.removeClass("active");
+			var container = self.view.get("submit");
+			container.toggle();
+			if (container.is(":visible")) {
+				element.addClass("active");
+			}
+		});
+	} else {
+		element.addClass("disabled");
+		self.addAuthPopupLauncher(element);
+	}
+	return element;
+};
+
+CrowdRules.methods.addAuthPopupLauncher = function(element) {
+	var self = this;
+	var assemble = function() {
+		self.auth._assembleIdentityControl("login", element);
+	}
+	this.auth ? assemble() : this.authWaitingQueue.push(assemble);
 };
 
 CrowdRules.renderers.permalinkContainer = function(element) {
@@ -158,6 +175,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 };
 
 CrowdRules.renderers.auth = function(element) {
+	var self = this;
 	var identityManagerItem = {
 		"width": 400,
 		"height": 250,
@@ -169,6 +187,10 @@ CrowdRules.renderers.auth = function(element) {
 		"identityManager": {
 			"login": identityManagerItem,
 			"signup": identityManagerItem
+		},
+		"ready": function() {
+			self.auth = this;
+			$.map(self.authWaitingQueue, function(callback) { callback(); });
 		}
 	});
 	return element;
