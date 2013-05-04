@@ -159,6 +159,9 @@ CrowdRules.renderers.submit = function(element) {
 		"target": element,
 		"appkey": this.config.get("appkey"),
 		"targetURL": this.config.get("targetURL"),
+		"labels": {
+			"post": "Submit your Entry"
+		},
 		"plugins": [{
 			"name": "CustomSubmitForm"
 		}]
