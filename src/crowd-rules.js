@@ -27,7 +27,8 @@ CrowdRules.config = {
 };
 
 CrowdRules.labels = {
-	"viewContestants": "View all contestants"
+	"viewContestants": "View all contestants",
+	"enterBusiness": "Enter the business"
 };
 
 CrowdRules.init = function() {
@@ -115,7 +116,7 @@ CrowdRules.templates.user =
 			'<div class="{class:auth}"></div>' +
 			'<div class="{class:title}"></div>' +
 			'<div class="{class:submitToggleButtonContainer}">' +
-				'<div class="btn btn-mini {class:submitToggleButton}">Enter the business</div>' +
+				'<div class="btn btn-mini {class:submitToggleButton}">{label:enterBusiness}</div>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
@@ -137,7 +138,7 @@ CrowdRules.templates.admin =
 CrowdRules.templates.permalink =
 	'<div class="{class:container}">' +
 		'<div class="{class:viewContestants}">' +
-			'<div class="btn">{label:viewContestants}</div>' +
+			'<div class="btn btn-mini">{label:viewContestants}</div>' +
 		'</div>' +
 		'<div class="{class:permalinkContainer}"></div>' +
 	'</div>';
