@@ -496,6 +496,8 @@ CrowdRules.css =
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
+	'.{class:container} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
 	// bootstrap components styles
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
 	'.{class:viewContestants} div { margin-left: 25px; }' +

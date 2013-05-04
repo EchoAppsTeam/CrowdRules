@@ -90,7 +90,7 @@ $.map(["_sendActivity", "_sendRequest", "_publishEventComplete"], function(metho
 });
 
 plugin.css =
-	'.{plugin.class:container} { width: 53px; text-align: center; }' +
+	'.{plugin.class:container} { width: 53px; text-align: center; padding-top: 10px; }' +
 	'.{plugin.class:votesCount} { margin-bottom: 5px; }'
 
 Echo.Plugin.create(plugin);
