@@ -154,7 +154,7 @@ sorter.css =
 	'.{class:container} { line-height: 40px; padding: 10px; border-bottom: 1px solid #dddddd; }' +
 	'.{class:subcontainer} { overflow: hidden; }' +
 	// item styles
-	'.{class:item} { font: 10px Arial; font-weight: normal; text-align: center; float: left; color: #0088CC; text-decoration: none; }' +
+	'.{class:item} { font: 10px Arial; font-weight: normal; text-align: center; float: left; color: #476CB8; text-decoration: none; }' +
 	'.{class:item}:hover { text-decoration: underline; }' +
 	'.{class:activeItem} { color: #555555; font-weight: bold; }' +
 	'.{class:activeItem}:hover { text-decoration: none; }' +

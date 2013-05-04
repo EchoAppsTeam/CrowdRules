@@ -137,9 +137,11 @@ CrowdRules.templates.admin =
 
 CrowdRules.templates.permalink =
 	'<div class="{class:container}">' +
+		'<div class="{class:auth}"></div>' +
 		'<div class="{class:viewContestants}">' +
 			'<div class="btn btn-mini">{label:viewContestants}</div>' +
 		'</div>' +
+		'<div class="echo-clear"></div>' +
 		'<div class="{class:permalinkContainer}"></div>' +
 	'</div>';
 
@@ -501,7 +503,9 @@ CrowdRules.css =
 	// bootstrap components styles
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
 	'.{class:viewContestants} div { margin-left: 25px; }' +
-	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal;  float: left; margin-left: 20px; }';
+	'.{class:permalinkContainer} { margin-top: 20px; }' +
+	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal;  float: left; margin-left: 20px; }' +
+	'.echo-sdk-ui .{class:container} a { color: #476CB8; }';
 
 Echo.App.create(CrowdRules);
 
