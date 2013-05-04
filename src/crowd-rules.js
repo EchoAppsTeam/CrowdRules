@@ -167,7 +167,7 @@ CrowdRules.methods.addAuthPopupLauncher = function(element) {
 	var self = this;
 	var assemble = function() {
 		self.auth._assembleIdentityControl("login", element);
-	}
+	};
 	this.auth ? assemble() : this.authWaitingQueue.push(assemble);
 };
 
@@ -331,6 +331,7 @@ CrowdRules.methods._toggleSorter = function(container, config) {
 };
 
 CrowdRules.methods._getMetadata = function() {
+	var authLauncher = $.proxy(this.addAuthPopupLauncher, this);
 	return [{
 // Stage 0
 "tabs": {
@@ -348,7 +349,8 @@ CrowdRules.methods._getMetadata = function() {
 			}, {
 				"name": "Reply"
 			}, {
-				"name": "Vote"
+				"name": "Vote",
+				"launcher": authLauncher
 			}, {
 				"name": "VideoContent"
 			}]
@@ -458,7 +460,8 @@ CrowdRules.methods._getMetadata = function() {
 			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:off markers: " + 
 				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
 			"plugins": [{
-				"name": "Vote"
+				"name": "Vote",
+				"launcher": authLauncher
 			}, {
 				"name": "VideoContent"
 			}]
