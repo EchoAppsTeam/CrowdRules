@@ -60,8 +60,9 @@ CrowdRules.init = function() {
 };
 
 CrowdRules.destroy = function() {
-	var stream = this.get("stream");
-	if (stream) stream.refresh();
+	$.map([this.get("stream"), this.get("finalistStream")], function(stream) {
+		if (stream) stream.refresh();
+	});
 };
 
 CrowdRules.dependencies = [{
@@ -224,10 +225,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 			}
 		}),
 		"ready": function() {
-			if (self.config.get("stageIndex") > 1) {
-				var businessName = $.parseJSON(this.threads[0].get("data.object.content")).businessName;
-				self.view.get("finalistActivityTitle").empty().append(self.labels.get("finalistLifestream") + "<span>" + businessName + "</span>");
-			}
+			self.view.render({"name": "finalistActivityTitle"});
 		}
 	}));
 	return element;
@@ -310,12 +308,21 @@ CrowdRules.renderers.tabs = function(element) {
 	return element;
 };
 
+CrowdRules.renderers.finalistActivityTitle = function(element) {
+	var stream = this.get("stream");
+	if (stream && this.config.get("stageIndex") > 1) {
+		var businessName = $.parseJSON(stream.threads[0].get("data.object.content")).businessName;
+		element.empty().append(this.labels.get("finalistLifestream") + "<span>" + businessName + "</span>");
+	}
+	return element;
+};
+
 CrowdRules.renderers.finalistActivityStream = function(element) {
 	if (!this.permalinkId) {
 		this.permalinkId = this._getFragment().replace(/[^\d-]+/g, "");
 	}
 	if (!this.permalinkId || this.config.get("stageIndex") < 2) return element.empty();
-	new Echo.StreamServer.Controls.Stream({
+	this.finalistStream = new Echo.StreamServer.Controls.Stream({
 		"target": element.empty(),
 		"appkey": this.config.get("appkey"),
 		"item": {
