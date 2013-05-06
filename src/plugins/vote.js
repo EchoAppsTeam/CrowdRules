@@ -85,9 +85,61 @@ plugin.methods._hasVoted = function() {
 	return hasVoted;
 };
 
-$.map(["_sendActivity", "_sendRequest", "_publishEventComplete"], function(method) {
-	plugin.methods[method] = Echo.StreamServer.Controls.Stream.Item.Plugins.Like.manifest.methods[method];
-});
+plugin.methods._sendRequest = function(data, callback, errorCallback) {
+	Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"secure": this.config.get("useSecureAPI", false, true),
+		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
+		"onData": callback,
+		"onError": errorCallback,
+		"data": data
+	}).send();
+};
+
+plugin.methods._sendActivity = function(name, item, actor) {
+	var plugin = this;
+	var activity = {
+		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
+		"targets": [{"id": item.get("data.object.id")}]
+	};
+	if (actor && actor.id) {
+		activity.author = actor.id;
+	}
+
+	this._sendRequest({
+		"content": activity,
+		"appkey": item.config.get("appkey"),
+		"sessionID": item.user.get("sessionID"),
+		"target-query": item.config.get("parent.query")
+	}, function(response) {
+		plugin._publishEventComplete({
+			"name": name,
+			"state": "Complete",
+			"response": response
+		});
+		plugin.requestDataRefresh();
+	}, function(response) {
+		plugin._publishEventComplete({
+			"name": name,
+			"state": "Error",
+			"response": response
+		});
+	});
+};
+
+plugin.methods._publishEventComplete = function(args) {
+	var item = this.component;
+	this.events.publish({
+		"topic": "on" + args.name + args.state,
+		"data": {
+			"item": {
+				"data": item.get("data"),
+				"target": item.config.get("target")
+			},
+			"response": args.response
+		}
+	});
+};
 
 plugin.css =
 	'.{plugin.class:container} { width: 53px; text-align: center; padding-top: 10px; }' +
