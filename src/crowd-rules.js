@@ -28,7 +28,7 @@ CrowdRules.config = {
 
 CrowdRules.labels = {
 	"viewContestants": "View all contestants",
-	"enterBusiness": "Enter the business"
+	"enterBusiness": "Submit your business"
 };
 
 CrowdRules.init = function() {
@@ -443,7 +443,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"tab": {
 			"id": "finalists",
-			"label": "Finalists"
+			"label": "Finalists Curation"
 		}
 	}
 },
