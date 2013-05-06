@@ -6,12 +6,12 @@ Echo.Loader.initApplication({
 	"component": "Echo.Apps.CrowdRules",
 	"backplane": {
 		"serverBaseURL": "http://api.echoenabled.com/v1",
-		"busName": "jskit"
+		"busName": "cnbc"
 	},
 	"config": {
 		"domainPrefix": domainPrefix,
 		"target": document.getElementById("echo-crowd-rules-app-content"),
-		"appkey": "test.echoenabled.com",
-		"rpxAppName": "echo.rpxnow.com"
+		"appkey": "echo.echo.streamserver.cnbc.prod",
+		"rpxAppName": "cnbc-echo.rpxnow.com"
 	}
 });

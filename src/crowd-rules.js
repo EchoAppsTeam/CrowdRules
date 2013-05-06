@@ -22,7 +22,7 @@ CrowdRules.config = {
 		}
 	},
 	"finalistMarker": "Finalist",
-	"targetURL": "http://example.com/crowdrules",
+	"targetURL": "http://cnbc.com/crowdrules",
 	"stageIndex": 0
 };
 
@@ -502,6 +502,7 @@ CrowdRules.css =
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
 	'.{class:viewContestants} div { margin-left: 25px; }' +
 	'.{class:permalinkContainer} { margin-top: 20px; }' +
+	'.echo-sdk-ui .echo-control-message { padding: 45px; }' +
 	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal;  float: left; margin-left: 20px; }' +
 	'.echo-sdk-ui .{class:container} a { color: #476CB8; }';
 
