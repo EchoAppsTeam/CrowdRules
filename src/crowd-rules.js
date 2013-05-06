@@ -25,15 +25,16 @@ CrowdRules.config = {
 	"targetURL": "http://test.cnbc.com/crowdrules",
 	"stageIndex": 0,
 	"identityManager": {
-		"width": 400,
-		"height": 250,
+		"width": 270,
+		"height": 200,
+		"title": "Sign in...",
 		"url": ""
 	}
 };
 
 CrowdRules.config.normalizer = {
 	"identityManager": function(o) {
-		o.url = o.url || "https://" + this.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel=";
+		o.url = o.url || this.get("domainPrefix") + "/third-party/login.html?app=" + this.get("rpxAppName") + "&token_url=http%3A%2F%2Fapps.echoenabled.com%2Fv2%2Fjanrain%2Fwaiting.html&bp_channel=";
 		return o;
 	}
 };

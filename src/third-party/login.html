@@ -1,0 +1,55 @@
+<html>
+<body>
+<div id="janrainEngageEmbed"></div>
+<script type="text/javascript">
+
+(function() {
+
+    // extracting GET parameters from URL
+    var params = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        params[pair[0]] = decodeURIComponent(pair[1]);
+    }
+
+    // check mandatory parameters
+    if (!params["app"] || !params["bp_channel"] || !params["token_url"]) {
+        document.getElementById("janrainEngageEmbed").innerHTML = "Mandatory parameter(s) missing";
+        return;
+    }
+
+    if (typeof window.janrain !== 'object') window.janrain = {};
+    if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+    
+    janrain.settings.tokenUrl = params["token_url"];
+    janrain.settings.bpChannel = params["bp_channel"];
+    janrain.settings.tokenAction = 'event';
+    janrain.settings.type = 'embed';
+
+    function isReady() { janrain.ready = true; };
+    if (document.addEventListener) {
+      document.addEventListener("DOMContentLoaded", isReady, false);
+    } else {
+      window.attachEvent('onload', isReady);
+    }
+
+    var e = document.createElement('script');
+    e.type = 'text/javascript';
+    e.id = 'janrainAuthWidget';
+
+    if (document.location.protocol === 'https:') {
+      e.src = 'https://rpxnow.com/js/lib/' + params["app"] + '/engage.js';
+    } else {
+      e.src = 'http://widget-cdn.rpxnow.com/js/lib/' + params["app"] + '/engage.js';
+    }
+
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(e, s);
+
+})();
+
+</script>
+</body>
+</html>

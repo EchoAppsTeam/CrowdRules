@@ -12,6 +12,6 @@ Echo.Loader.initApplication({
 		"domainPrefix": domainPrefix,
 		"target": document.getElementById("echo-crowd-rules-app-content"),
 		"appkey": "echo.echo.streamserver.cnbc.prod",
-		"rpxAppName": "cnbc-echo.rpxnow.com"
+		"rpxAppName": "cnbc-echo"
 	}
 });
