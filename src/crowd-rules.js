@@ -537,7 +537,8 @@ CrowdRules.methods._getMetadata = function() {
 				"itemActions": ["delete"],
 				"userActions": [],
 				"labels": {
-					"deleteButton": "Exclude from finalists"
+					"deleteButton": "Exclude from finalists",
+					"changingStatusToModeratorDeleted": "Excluding..."
 				}
 			}]
 		},
@@ -570,7 +571,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "finalists",
+			"id": "contestans",
 			"label": "Finalists"
 		}
 	}
