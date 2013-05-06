@@ -41,7 +41,8 @@ CrowdRules.config.normalizer = {
 
 CrowdRules.labels = {
 	"viewContestants": "View all contestants",
-	"enterBusiness": "Submit your business"
+	"enterBusiness": "Submit your business",
+	"finalistLifestream": "Finalist lifestream: "
 };
 
 CrowdRules.init = function() {
@@ -109,9 +110,8 @@ CrowdRules.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.VideoContent.onPermalinkOpen": function(topic, args) {
 		var stream = this.get("stream");
 		var item = stream.items[args.item.data.unique];
-		var id = stream._getItemListIndex(item, stream.threads);
-		this.permalinkPage = id ? stream.threads[id - 1].get("data.pageAfter") : 0;
-		this._navigate("/video/" + item.get("data.object.id").replace(/[^\d-]+/g, ""));
+		this.permalinkId = item.get("data.object.id").replace(/[^\d-]+/g, "");
+		this._navigate("/video/" + this.permalinkId);
 	}
 };
 
@@ -125,39 +125,69 @@ CrowdRules.methods.template = function() {
 
 CrowdRules.templates.user =
 	'<div class="{class:container}">' +
-		'<div class="{class:header}">' +
-			'<div class="{class:auth}"></div>' +
-			'<div class="{class:title}"></div>' +
-			'<div class="{class:submitToggleButtonContainer}">' +
-				'<div class="btn btn-mini {class:submitToggleButton}">{label:enterBusiness}</div>' +
+		'<div class="{class:main}">' +
+			'<div class="{class:mainWrapper}">' +
+				'<div class="{class:header}">' +
+					'<div class="{class:auth}"></div>' +
+					'<div class="{class:title}"></div>' +
+					'<div class="{class:submitToggleButtonContainer}">' +
+						'<div class="btn btn-mini {class:submitToggleButton}">{label:enterBusiness}</div>' +
+					'</div>' +
+					'<div class="echo-clear"></div>' +
+				'</div>' +
+				'<div class="{class:userContent}">' +
+					'<div class="{class:submit}"></div>' +
+					'<div class="{class:content}"></div>' +
+				'</div>' +
 			'</div>' +
-			'<div class="echo-clear"></div>' +
 		'</div>' +
-		'<div class="{class:userContent}">' +
-			'<div class="{class:submit}"></div>' +
-			'<div class="{class:content}"></div>' +
+		'<div class="{class:right}">' +
+			'<div class="{class:rightWrapper}">' +
+				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
+			'</div>' +
 		'</div>' +
+		'<div class="echo-clear"></div>' +
 	'</div>';
 
 CrowdRules.templates.admin =
 	'<div class="{class:container}">' +
-		'<div class="{class:adminContent}">' +
-			'<div class="{class:auth}" style="float: right;"></div>' +
-			'<div class="{class:tabs}"></div>' +
+		'<div class="{class:main}">' +
+			'<div class="{class:mainWrapper}">' +
+				'<div class="{class:adminContent}">' +
+					'<div class="{class:auth}" style="float: right;"></div>' +
+					'<div class="{class:tabs}"></div>' +
+				'</div>' +
+			'</div>' +
 		'</div>' +
+		'<div class="{class:right}">' +
+			'<div class="{class:rightWrapper}">' +
+				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="echo-clear"></div>' +
 	'</div>';
-
 
 CrowdRules.templates.permalink =
 	'<div class="{class:container}">' +
-		'<div class="{class:auth}"></div>' +
-		'<div class="{class:viewContestants}">' +
-			'<div class="btn btn-mini">{label:viewContestants}</div>' +
+		'<div class="{class:main}">' +
+			'<div class="{class:mainWrapper}">' +
+				'<div class="{class:auth}"></div>' +
+				'<div class="{class:viewContestants}">' +
+					'<div class="btn btn-mini">{label:viewContestants}</div>' +
+				'</div>' +
+				'<div class="echo-clear"></div>' +
+				'<div class="{class:permalinkContainer}"></div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="{class:right}">' +
+			'<div class="{class:rightWrapper}">' +
+				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
+				'<div class="{class:finalistActivityTitle}"></div>' +
+				'<div class="{class:finalistActivityStream}"></div>' +
+			'</div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
-		'<div class="{class:permalinkContainer}"></div>' +
 	'</div>';
-
 
 CrowdRules.renderers.submitToggleButton = function(element) {
 	var self = this;
@@ -188,6 +218,7 @@ CrowdRules.methods.addAuthPopupLauncher = function(element) {
 };
 
 CrowdRules.renderers.permalinkContainer = function(element) {
+	var self = this;
 	var fragment = this._getFragment();
 	var metadata = this.get("metadata.tabs.contestans.stream", {
 		"plugins": []
@@ -203,7 +234,13 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
 				"rest": "itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
 			}
-		})
+		}),
+		"ready": function() {
+			if (self.config.get("stageIndex") > 1) {
+				var businessName = $.parseJSON(this.threads[0].get("data.object.content")).businessName;
+				self.view.get("finalistActivityTitle").empty().append(self.labels.get("finalistLifestream") + "<span>" + businessName + "</span>");
+			}
+		}
 	}));
 	return element;
 };
@@ -285,6 +322,28 @@ CrowdRules.renderers.tabs = function(element) {
 	return element;
 };
 
+CrowdRules.renderers.finalistActivityStream = function(element) {
+	if (!this.permalinkId) {
+		this.permalinkId = this._getFragment().replace(/[^\d-]+/g, "");
+	}
+	if (!this.permalinkId || this.config.get("stageIndex") < 2) return element.empty();
+	new Echo.StreamServer.Controls.Stream({
+		"target": element.empty(),
+		"appkey": this.config.get("appkey"),
+		"item": {
+			"reTag": false
+		},
+		"query": this.substitute({
+			"template": "childrenof:http://{data:domain}/ECHO/item/{self:permalinkId} {data:rest}",
+			"data": {
+				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
+				"rest": "itemsPerPage:5 children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
+			}
+		})
+	});
+	return element;
+};
+
 CrowdRules.methods._getFragment = function(fragment) {
 	if (typeof fragment === "undefined") {
 		fragment = window.location.hash;
@@ -300,16 +359,19 @@ CrowdRules.methods._navigate = function(fragment) {
 };
 
 CrowdRules.methods._toggleStream = function(container, config) {
-	var self = this, stream = this.get("stream");
+	var self = this, stream = this.get("stream"), ready;
 	if (typeof stream === "undefined") {
+		ready = config.ready || $.noop;
+		delete config.ready;
 		new Echo.StreamServer.Controls.Stream($.extend({
 			"target": $("<div>"),
-			"appkey": self.config.get("appkey"),
+			"appkey": this.config.get("appkey"),
 			"context": this.config.get("context"),
 			"ready": function() {
 				self.set("query", this.config.get("query"));
 				self.set("stream", this);
 				container.append(this.config.get("target"));
+				ready.apply(this, arguments);
 			}
 		}, this.config.get("stream"), config));
 	} else {
@@ -483,7 +545,7 @@ CrowdRules.methods._getMetadata = function() {
 }, {
 // Stage 2
 "tabs": {
-	"finalists": {
+	"contestans": {
 		"visible": true,
 		"sorter": {
 			"visible": false
@@ -518,17 +580,27 @@ CrowdRules.css =
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
 	'.{class:content} { border-top: 1px solid #dddddd; }' +
 	'.{class:userContent} { margin-top: 10px; }' +
+	'.{class:main}, .{class:right} { float: left; }' +
+	'.{class:main} { width: 100%; }' +
+	'.{class:mainWrapper} { margin-right: 220px; }' +
+	'.{class:right} { margin-left: -220px; }' +
+	'.{class:rightWrapper} { width: 200px; margin-left: 20px; }' +
+	'.{class:finalistActivityTitle} { font-size: 14px; }' +
+	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
 	// auth control styles
-	'.{class:container} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
-	'.{class:container} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
+	'.{class:main} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
+	'.{class:main} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
 	// stream control styles
-	'.{class:container} .echo-streamserver-controls-stream-header{ display: none; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
-	'.{class:container} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
+	'.{class:main} .echo-streamserver-controls-stream-header{ display: none; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
+	'.{class:right} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 46px; }' +
+	'.{class:right} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -46px; }' +
+	'.{class:right} .echo-streamserver-controls-stream-item-avatar { width: 36px; }' +
 	// bootstrap components styles
 	'.{class:container} .btn, .{class:container} .btn:hover { background-image: none!important; height: auto!important; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
