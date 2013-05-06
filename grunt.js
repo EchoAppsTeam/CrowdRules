@@ -64,9 +64,14 @@ module.exports = function(grunt) {
 			]
 		},
 		patch: {
-			"urls": {
+			"init": {
 				files: [
 					"<%= dirs.build %>/init.js",
+				],
+				patcher: "urlsInit"
+			},
+			"urls": {
+				files: [
 					"<%= dirs.build %>/crowd-rules.js"
 				],
 				patcher: "urls"
@@ -119,12 +124,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:js copy:html patch:urls concat clean:nonpacks copy:build";
+				tasks = "copy:js copy:html patch:init patch:urls concat clean:nonpacks copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:js copy:html patch:urls min concat clean:nonpacks copy:build";
+				tasks = "copy:js copy:html patch:init patch:urls min concat clean:nonpacks copy:build";
 				break;
 			case "final":
 				tasks = "copy:demo patch:demo copy:build";
@@ -147,15 +152,22 @@ module.exports = function(grunt) {
 	});
 
 	var patchers = {
+		"urlsInit": function(src, config) {
+			var env = shared.config("env");
+			if (env === "dev" || env === "test") {
+				src = src.replace(
+					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
+					config.domain
+				);
+			}
+			return src;
+		},
 		"urls": function(src, config) {
 			var env = shared.config("env");
 			if (env === "dev" || env === "test") {
 				src = src.replace(
-					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules(\/third-party)/g,
-					config.domain + "$1" + (env === "dev" ? "/dev" : "")
-				).replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
-					config.domain
+					config.domain + (env === "dev" ? "/dev" : "")
 				);
 			}
 			return src;
