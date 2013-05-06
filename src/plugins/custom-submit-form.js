@@ -8,6 +8,7 @@ var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Control
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
+	"descriptionLimit": 1000,
 	"videoMaxWidth": 480, // in px
 	"confirmationDisplayTimeout": 5000 // 5 sec
 };
@@ -18,7 +19,8 @@ plugin.labels = {
 	"descriptionHint": "Description of the Business",
 	"processingMedia": "Processing media link. Please wait...",
 	"noMediaFound": "No media content was detected. The link will be displayed as is.",
-	"submitConfirmation": "Thanks, your video has been submitted for consideration."
+	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
+	"counterText": "Description limit is {limit} characters, {typed} typed so far."
 };
 
 plugin.init = function() {
@@ -75,6 +77,7 @@ plugin.events = {
 		});
 		this.set("mediaContent", "");
 		this.view.get("videoPreview").hide();
+		this.view.render({"name": "charsCounter"});
 		confirmation.show();
 		setTimeout(function() {
 			confirmation.hide();
@@ -105,6 +108,7 @@ plugin.templates.main =
 		'<input type="hidden" class="{class:markers}">' +
 
 		'<div class="{class:controls}">' +
+			'<div class="{plugin.class:charsCounter}"></div>' +
 			'<div class="{class:postContainer}">' +
 				'<div class="btn echo-primaryFont {class:postButton}"></div>' +
 			'</div>' +
@@ -112,17 +116,19 @@ plugin.templates.main =
 		'</div>' +
 	'</div>';
 
-plugin.component.renderers.postButton = function(element) {
-	this.parentRenderer("postButton", arguments);
-// TODO: disable button if the user is not logged in?
-//	if (!this.component.user.is("logged")) {
-//		element.attr("disabled", true).off("click");
-//	}
-	return element;
-};
-
 plugin.renderers.businessName = function(element) {
 	return this._putHint(element, "businessName");
+};
+
+plugin.renderers.charsCounter = function(element) {
+	var limit = this.config.get("descriptionLimit", 0);
+	var typed = this.view.get("description").val().length;
+	var label = this.labels.get("counterText", {
+		"typed": typed,
+		"left": Math.max(limit - typed, 0),
+		"limit": limit
+	});
+	return element.text(label);
 };
 
 plugin.renderers.videoURL = function(element) {
@@ -164,7 +170,22 @@ plugin.renderers.videoURL = function(element) {
 };
 
 plugin.renderers.description = function(element) {
-	return this._putHint(element, "description");
+	this._putHint(element, "description");
+	var self = this;
+	var limit = this.config.get("descriptionLimit", 0);
+	var handler = function() {
+		if (limit) {
+			var text = element.val();
+			if (text.length <= limit) {
+				self.set("text", text);
+			} else if (text.length > limit) {
+				element.val(self.get("text"));
+				return;
+			}
+		}
+		self.view.render({"name": "charsCounter"});
+        };
+        return element.on("blur focus keyup keypress", handler);
 };
 
 plugin.methods._putHint = function(element, label) {
@@ -182,6 +203,7 @@ plugin.css =
 	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
+	'.{plugin.class:charsCounter} { float: left; margin: 5px 0px 0px 2px; font-size: 12px; color: #555555; }' +
 	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }';
 
 Echo.Plugin.create(plugin);
