@@ -508,7 +508,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"plugins": [{
 				"name": "Vote",
 				"readOnly": true
@@ -546,6 +546,16 @@ CrowdRules.methods._getMetadata = function() {
 			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
+				"name": "Reply",
+				"nestedPlugins": [{
+					"name": "FormAuth",
+					"submitPermissions": "forceLogin",
+					"identityManager": {
+						"login": identityManagerItem,
+						"signup": identityManagerItem
+					}
+				}]
+			}, {
 				"name": "Vote",
 				"launcher": authLauncher
 			}, {
@@ -562,6 +572,38 @@ CrowdRules.methods._getMetadata = function() {
 	"visible": false
 }
 // End of Stage 2
+}, {
+// Stage 3
+"tabs": {
+	"contestans": {
+		"visible": true,
+		"sorter": {
+			"visible": false
+		},
+		"stream": {
+			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Vote",
+				"readOnly": true,
+				"launcher": authLauncher
+			}, {
+				"name": "VideoContent"
+			}, {
+				"name": "ItemWinner",
+				"cssClass": this.cssPrefix + "itemWinner"
+			}]
+		},
+		"tab": {
+			"id": "contestans",
+			"label": "Finalists"
+		}
+	}
+},
+"submit": {
+	"visible": false
+}
+// End of Stage 3
 }];
 };
 
@@ -579,6 +621,7 @@ CrowdRules.css =
 	'.{class:rightWrapper} { width: 200px; margin-left: 25px; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
+	'.{class:itemWinner} { background-color: #ffff99; }' +
 	// FIXME: temporary CSS rules. remove me!
 	'.{class:adContainer} { border: 1px dashed #000; text-align: center; height: 300px; padding-top: 100px; margin-bottom: 30px; }' +
 	// auth control styles
