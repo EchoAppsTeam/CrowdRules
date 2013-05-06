@@ -1,0 +1,14 @@
+{
+  "name": "crowd-rules",
+  "title": "Crowd Rules",
+  "version": "1.0.0",
+  "author": {
+    "name": "Echo",
+    "url": "http://aboutecho.com"
+  },
+  "dependencies": {
+    "grunt-contrib": "~0.1.7",
+    "ftp": "~0.1.5"
+  },
+  "keywords": []
+}

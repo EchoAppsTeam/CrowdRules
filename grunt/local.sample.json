@@ -1,0 +1,12 @@
+{
+	"domain": "__YOUR_DOMAIN__",
+	"release": {
+		"targets": {
+			"app": [{
+				"src": "**",
+				"dest": "/apps/echo/crowd-rules/",
+				"baseSrcPath": "web/"
+			}]
+		}
+	}
+}

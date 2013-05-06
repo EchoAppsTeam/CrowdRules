@@ -40,7 +40,7 @@ CrowdRules.config = {
 
 CrowdRules.config.normalizer = {
 	"identityManager": function(o) {
-		o.url = o.url || this.get("domainPrefix") + "/third-party/login.html?app=" + this.get("rpxAppName") + "&token_url=http%3A%2F%2Fapps.echoenabled.com%2Fv2%2Fjanrain%2Fwaiting.html&bp_channel=";
+		o.url = o.url || "http://cdn.echoenabled.com/apps/echo/crowd-rules/third-party/login.html?app=" + this.get("rpxAppName") + "&token_url=http%3A%2F%2Fapps.echoenabled.com%2Fv2%2Fjanrain%2Fwaiting.html&bp_channel=";
 		return o;
 	}
 };
@@ -71,28 +71,10 @@ CrowdRules.dependencies = [{
 	"component": "Echo.IdentityServer.Controls.Auth",
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }, {
-	"component": "Echo.CrowdRules.Controls.AlphabeticalSorter",
-	"url": "{config:domainPrefix}/controls/alphabetical-sorter.js"
-}, {
 	"loaded": function() { return !!Echo.GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}, {
-	"plugin": "Echo.StreamServer.Controls.Stream.Item.Vote",
-	"url": "{config:domainPrefix}/plugins/vote.js"
-}, {
-	"plugin": "Echo.StreamServer.Controls.Stream.Item.FinalistButton",
-	"url": "{config:domainPrefix}/plugins/finalist-button.js"
-}, {
-	"plugin": "Echo.StreamServer.Controls.Stream.WithoutMore",
-	"url": "{config:domainPrefix}/plugins/without-more.js"
-}, {
-	"plugin": "Echo.StreamServer.Controls.Submit.Plugins.CustomSubmitForm",
-	"url": "{config:domainPrefix}/plugins/custom-submit-form.js"
-}, {
-	"plugin": "Echo.StreamServer.Controls.Stream.Item.Plugins.VideoContent",
-	"url": "{config:domainPrefix}/plugins/item-video-content.js"
 }];
 
 CrowdRules.events = {
