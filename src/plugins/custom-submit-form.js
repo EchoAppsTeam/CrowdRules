@@ -140,6 +140,7 @@ plugin.renderers.videoURL = function(element) {
 		self.set("lastProcessedLink", link);
 		preview.show().html('<span>' + self.labels.get("processingMedia") + '</span>');
 		$.get("http://api.embed.ly/1/oembed", {
+			"key": "20f6f47f7e584690ac9c29524a43fa55",
 			"url": link,
 			"maxwidth": self.config.get("videoMaxWidth"),
 			"format": "json"
