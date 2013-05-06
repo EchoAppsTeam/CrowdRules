@@ -184,7 +184,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 		"name": "WithoutMore"
 	});
 	this._toggleStream(element, $.extend(true, metadata, {
-		"query": "url:http://example.com/ECHO/item/" + id + " itemsPerPage:1 children:1"
+		"query": "url:http://example.com/ECHO/item/" + id + " itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
 	}));
 	return element;
 };
@@ -344,8 +344,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
-				"sortOrder:likesDescending children:1",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -369,7 +368,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched safeHTML:permissive children:1",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched,SystemFlagged user.state:Untouched,ModeratorApproved safeHTML:permissive children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -399,8 +398,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive " +
-				"sortOrder:likesDescending children:1",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "WithoutMore"
@@ -429,8 +427,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage:10 safeHTML:off markers: " + this.config.get("finalistMarker") + 
-				" sortOrder:likesDescending children:1",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 safeHTML:permissive markers:" + this.config.get("finalistMarker") + " sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"plugins": [{
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -460,8 +457,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof: " + this.config.get("targetURL") + " itemsPerPage: 10 state:ModeratorApproved safeHTML:off markers: " + 
-				this.config.get("finalistMarker") + " sortOrder:likesDescending children:1",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers:" + this.config.get("finalistMarker") + " sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"plugins": [{
 				"name": "Vote",
 				"launcher": authLauncher
