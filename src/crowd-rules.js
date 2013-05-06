@@ -458,6 +458,7 @@ CrowdRules.methods._getMetadata = function() {
 		},
 		"stream": {
 			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers:" + this.config.get("finalistMarker") + " sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Vote",
 				"launcher": authLauncher
