@@ -21,7 +21,6 @@ CrowdRules.config = {
 			"emptyStream": "No videos at this time..."
 		}
 	},
-	"finalistMarker": "Finalist",
 	"targetURL": "http://test.cnbc.com/crowdrules",
 	"stageIndex": 0,
 	"identityManager": {
@@ -29,6 +28,13 @@ CrowdRules.config = {
 		"height": 200,
 		"title": "Sign in...",
 		"url": ""
+	},
+	"finalist": {
+		"marker": "Finalist",
+		"postfix": "/finalists",
+		"attributes": {
+			"state": "ModeratorApproved"
+		}
 	}
 };
 
@@ -503,10 +509,9 @@ CrowdRules.methods._getMetadata = function() {
 						"signup": identityManagerItem
 					}
 				}]
-			}, {
-				"name": "MarkerButton",
-				"marker": this.config.get("finalistMarker")
-			}, {
+			}, $.extend({}, this.config.get("finalist"), {
+				"name": "MarkerButton"
+			}), {
 				"name": "VideoContent"
 			}]
 		},
@@ -521,15 +526,19 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 safeHTML:permissive markers:" + this.config.get("finalistMarker") + " sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"plugins": [{
-				"name": "MarkerButton",
-				"marker": this.config.get("finalistMarker")
-			}, {
 				"name": "Vote",
 				"readOnly": true
 			}, {
 				"name": "VideoContent"
+			}, {
+				"name": "Moderation",
+				"itemActions": ["delete"],
+				"userActions": [],
+				"labels": {
+					"deleteButton": "Exclude from finalists"
+				}
 			}]
 		},
 		"tab": {
@@ -551,7 +560,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive markers:" + this.config.get("finalistMarker") + " sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Vote",

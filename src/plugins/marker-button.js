@@ -9,12 +9,15 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"name": "FinalistButton",
-	"marker": "Finalist"
+	"marker": "",
+	"postfix": "",
+	"attributes": {}
 };
 
 plugin.labels = {
 	"unmarkedTitle": "Make a Finalist",
-	"markedTitle": "Exclude from finalists"
+	"markedTitle": "Exclude from finalists",
+	"markingTitle": "Making a Finalist..."
 };
 
 plugin.init = function() {
@@ -23,32 +26,74 @@ plugin.init = function() {
 
 plugin.methods._assembleButton = function() {
 	var self = this, item = this.component;
-	var callback = function() {
-		self._sendRequest({
-			"content": self._prepareActivity(
-				self._isMarked() ? "unmark" : "mark",
-				"markers",
-				self.config.get("marker")
-			),
-			"appkey": item.config.get("appkey"),
-			"sessionID": item.user.get("sessionID"),
-			"target-query": item.config.get("parent.query")
-		}, function(response) {
-			// publish onComplete event if it's necessary
-			self.requestDataRefresh();
-		}, function(response) {
-			// publish onError event if it's necessary
-		});
+	var handler = function() {
+		item.block(self.labels.get("markingTitle"));
+		var requestsCount = 2;
+		var callbacks = {
+			"success": function() {
+				requestsCount--;
+				if (requestsCount === 0) self.requestDataRefresh();
+			},
+			"error": function() {}
+		};
+		self._markItem(item, callbacks);
+		self._duplicateItem(item, self.config.get("postfix"), self.config.get("attributes"), callbacks);
 	};
 	return function() {
 		var item = this;
 		return {
 			"name": self.config.get("name"),
 			"label": self.labels.get((self._isMarked() ? "marked" : "unmarked") + "Title"),
-			"visible": item.user.is("admin") && item.isRoot(),
-			"callback": callback
+			"visible": item.user.is("admin") && !self._isMarked() && item.isRoot(),
+			"callback": handler
 		}
 	};
+};
+
+plugin.methods._markItem = function(item, callbacks) {
+	var self = this;
+	this._sendRequest({
+		"content": this._prepareActivity("mark", self._getObjectContent("marker", self.config.get("marker"))),
+		"appkey": item.config.get("appkey"),
+		"sessionID": item.user.get("sessionID"),
+		"target-query": item.config.get("parent.query")
+	}, function(response) {
+		callbacks.success();
+	}, function(response) {
+		callbacks.error();
+	});
+};
+
+plugin.methods._duplicateItem = function(item, postfix, attributes, callbacks) {
+	var self = this, target = item.get("data.target.id") + postfix;
+	var get = function(field) {
+		var obj = item.get("data.object." + field);
+		var handlers = {
+			// add more type handlers here if it's needed
+			"array": function() {
+				return obj.length ? "undefined" : obj.join(", ");
+			}
+		};
+		return handlers[typeof obj] ? handlers[typeof obj]() : obj;
+	};
+	this._sendRequest({
+		"content": [].concat(
+			this._prepareActivity("post", this._getObjectContent("comment", get("content")), target),
+			this._prepareActivity("mark", this._getObjectContent("marker", get("markers")), target),
+			this._prepareActivity("tag", this._getObjectContent("tag", get("tags")), target)
+		),
+		"appkey": item.config.get("appkey"),
+		"sessionID": item.user.get("sessionID")
+	}, function(response) {
+		self._sendRequest({
+			"content": self._prepareActivity("update", attributes, response.objectID),
+			"appkey": item.config.get("appkey"),
+			"sessionID": item.user.get("sessionID")
+		});
+		callbacks.success();
+	}, function(response) {
+		callbacks.error();
+	});
 };
 
 plugin.methods._isMarked = function() {
@@ -63,18 +108,31 @@ plugin.methods._isMarked = function() {
 	return isMarked;
 };
 
-plugin.methods._prepareActivity = function(verb, type, data) {
+plugin.methods._getObjectContent = function(type, content) {
+	return !(content && type) ? undefined :  {
+		"objectTypes": [this._getASURL(type)],
+		"content": content
+	};
+};
+
+plugin.methods._prepareActivity = function(verb, data, target) {
 	return (!data) ? [] : {
-		"object": {
-			"objectTypes": ["http://activitystrea.ms/schema/1.0/" + type],
-			"content": data
+		"actor": {
+			"objectTypes": [this._getASURL("person")],
+			"name": this.component.user.get("name"),
+			"avatar": ""
 		},
+		"object": data,
 		"source": this.component.config.get("source"),
-		"verbs": ["http://activitystrea.ms/schema/1.0/" + verb],
+		"verbs": [this._getASURL(verb)],
 		"targets": [{
-			"id": this.component.get("data.object.id")
+			"id": target ? target : this.component.get("data.object.id")
 		}]
 	};
+};
+
+plugin.methods._getASURL = function(postfix) {
+	return "http://activitystrea.ms/schema/1.0/" + postfix;
 };
 
 
