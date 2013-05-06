@@ -33,7 +33,7 @@ CrowdRules.config = {
 
 CrowdRules.config.normalizer = {
 	"identityManager": function(o) {
-		o.url = "https://" + this.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel=";
+		o.url = o.url || "https://" + this.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel=";
 		return o;
 	}
 };
@@ -188,7 +188,6 @@ CrowdRules.methods.addAuthPopupLauncher = function(element) {
 
 CrowdRules.renderers.permalinkContainer = function(element) {
 	var fragment = this._getFragment();
-	var id = fragment.replace(/[^\d-]+/, "");
 	var metadata = this.get("metadata.tabs.contestans.stream", {
 		"plugins": []
 	});
@@ -196,7 +195,14 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 		"name": "WithoutMore"
 	});
 	this._toggleStream(element, $.extend(true, metadata, {
-		"query": "url:http://example.com/ECHO/item/" + id + " itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
+		"query": this.substitute({
+			"template": "url:http://{data:domain}/ECHO/item/{data:id} {data:rest}",
+			"data": {
+				"id": fragment.replace(/[^\d-]+/, ""),
+				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
+				"rest": "itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
+			}
+		})
 	}));
 	return element;
 };
