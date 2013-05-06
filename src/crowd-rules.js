@@ -22,7 +22,7 @@ CrowdRules.config = {
 		}
 	},
 	"finalistMarker": "Finalist",
-	"targetURL": "http://cnbc.com/crowdrules",
+	"targetURL": "http://test.cnbc.com/crowdrules",
 	"stageIndex": 0
 };
 
