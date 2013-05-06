@@ -151,8 +151,11 @@ module.exports = function(grunt) {
 			var env = shared.config("env");
 			if (env === "dev" || env === "test") {
 				src = src.replace(
+					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules(\/third-party)/g,
+					config.domain + "$1" + (env === "dev" ? "/dev" : "")
+				).replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
-					config.domain + (env === "dev" ? "/dev" : "")
+					config.domain
 				);
 			}
 			return src;
