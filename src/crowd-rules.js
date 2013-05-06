@@ -23,7 +23,19 @@ CrowdRules.config = {
 	},
 	"finalistMarker": "Finalist",
 	"targetURL": "http://test.cnbc.com/crowdrules",
-	"stageIndex": 0
+	"stageIndex": 0,
+	"identityManager": {
+		"width": 400,
+		"height": 250,
+		"url": ""
+	}
+};
+
+CrowdRules.config.normalizer = {
+	"identityManager": function(o) {
+		o.url = "https://" + this.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel=";
+		return o;
+	}
 };
 
 CrowdRules.labels = {
@@ -197,11 +209,7 @@ CrowdRules.renderers.viewContestants = function(element) {
 
 CrowdRules.renderers.auth = function(element) {
 	var self = this;
-	var identityManagerItem = {
-		"width": 400,
-		"height": 250,
-		"url": "https://" + this.config.get("rpxAppName") + "/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-	};
+	var identityManagerItem = this.config.get("identityManager");
 	new Echo.IdentityServer.Controls.Auth({
 		"target": element,
 		"appkey": this.config.get("appkey"),
@@ -335,6 +343,7 @@ CrowdRules.methods._toggleSorter = function(container, config) {
 
 CrowdRules.methods._getMetadata = function() {
 	var authLauncher = $.proxy(this.addAuthPopupLauncher, this);
+	var identityManagerItem = this.config.get("identityManager");
 	return [{
 // Stage 0
 "tabs": {
@@ -349,7 +358,15 @@ CrowdRules.methods._getMetadata = function() {
 			"plugins": [{
 				"name": "Moderation"
 			}, {
-				"name": "Reply"
+				"name": "Reply",
+				"nestedPlugins": [{
+					"name": "FormAuth",
+					"submitPermissions": "forceLogin",
+					"identityManager": {
+						"login": identityManagerItem,
+						"signup": identityManagerItem
+					}
+				}]
 			}, {
 				"name": "Vote",
 				"launcher": authLauncher
@@ -408,7 +425,15 @@ CrowdRules.methods._getMetadata = function() {
 			}, {
 				"name": "Moderation"
 			}, {
-				"name": "Reply"
+				"name": "Reply",
+				"nestedPlugins": [{
+					"name": "FormAuth",
+					"submitPermissions": "forceLogin",
+					"identityManager": {
+						"login": identityManagerItem,
+						"signup": identityManagerItem
+					}
+				}]
 			}, {
 				"name": "MarkerButton",
 				"marker": this.config.get("finalistMarker")
@@ -498,7 +523,7 @@ CrowdRules.css =
 	'.{class:container} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
 	'.{class:container} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
 	// bootstrap components styles
-	'.{class:container} .btn, .{class:container} .btn:hover { background-image: none!important; }' +
+	'.{class:container} .btn, .{class:container} .btn:hover { background-image: none!important; height: auto!important; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
 	'.{class:viewContestants} div { margin-left: 25px; }' +
 	'.{class:permalinkContainer} { margin-top: 20px; }' +
