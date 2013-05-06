@@ -575,7 +575,7 @@ CrowdRules.methods._getMetadata = function() {
 
 CrowdRules.css =
 	'.{class:container} { padding: 20px; margin-bottom: 50px; }' +
-	'.{class:submit} { display: none; margin-bottom: 10px; }' +
+	'.{class:submit} { display: none; margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
 	'.{class:content} { border-top: 1px solid #dddddd; }' +
