@@ -582,7 +582,7 @@ CrowdRules.css =
 	'.{class:userContent} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
-	'.{class:mainWrapper} { margin-right: 220px; }' +
+	'.{class:mainWrapper} { margin-right: 225px; }' +
 	'.{class:right} { margin-left: -225px; }' +
 	'.{class:rightWrapper} { width: 200px; margin-left: 25px; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; }' +
