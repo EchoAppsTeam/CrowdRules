@@ -141,7 +141,11 @@ module.exports = function(grunt) {
 			grunt.fail.fatal("Release can be performed only in \"production\" and \"staging\" environment.");
 		}
 		// we are pushing code to production so we must delete development configuration
-		delete config.domain;
+		if (shared.config("env") === "production") {
+			delete config.domain;
+		} else {
+			config.domain = "echosandbox.com/tests/release/apps/echo/crowd-rules";
+		}
 		var target = this.args[0];
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {

@@ -154,7 +154,7 @@ module.exports = function(grunt) {
 	var patchers = {
 		"urlsInit": function(src, config) {
 			var env = shared.config("env");
-			if (env === "dev" || env === "test") {
+			if (env !== "production") {
 				src = src.replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
 					config.domain
@@ -164,7 +164,7 @@ module.exports = function(grunt) {
 		},
 		"urls": function(src, config) {
 			var env = shared.config("env");
-			if (env === "dev" || env === "test") {
+			if (env !== "production") {
 				src = src.replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
 					config.domain + (env === "dev" ? "/dev" : "")
