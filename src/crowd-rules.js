@@ -583,10 +583,12 @@ CrowdRules.css =
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
 	'.{class:mainWrapper} { margin-right: 220px; }' +
-	'.{class:right} { margin-left: -220px; }' +
-	'.{class:rightWrapper} { width: 200px; margin-left: 20px; }' +
+	'.{class:right} { margin-left: -225px; }' +
+	'.{class:rightWrapper} { width: 200px; margin-left: 25px; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
+	// FIXME: temporary CSS rules. remove me!
+	'.{class:adContainer} { border: 1px dashed #000; text-align: center; height: 300px; padding-top: 100px; margin-bottom: 30px; }' +
 	// auth control styles
 	'.{class:main} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
 	'.{class:main} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
