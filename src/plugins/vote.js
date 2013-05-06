@@ -31,6 +31,9 @@ plugin.templates.main =
 
 plugin.renderers.vote = function(element) {
 	var self = this, item = this.component;
+	if (this.config.get("readOnly")) {
+		return element.hide();
+	}
 	var voted = this._hasVoted();
 	element.off("click").off("hover");
 	if (!item.user.is("logged") || this.config.get("readOnly")) {
@@ -66,7 +69,9 @@ plugin.renderers.vote = function(element) {
 plugin.renderers.votesCount = function(element) {
 	var voted = this._hasVoted();
 	var votesCount = this.component.get("data.object.accumulators.likesCount", 0);
-	var cssClass = voted ? "btn-success" : (votesCount ? "btn-primary" : "");
+	var cssClass = voted && !this.config.get("readOnly")
+		? "btn-success"
+		: (votesCount ? "btn-primary" : "");
 	if (cssClass) element.addClass(cssClass);
 	else element.removeClass("btn-success btn-primary");
 	return element
