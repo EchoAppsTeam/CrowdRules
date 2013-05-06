@@ -11,6 +11,7 @@ Echo.Loader.initApplication({
 	"config": {
 		"target": document.getElementById("echo-crowd-rules-app-content"),
 		"appkey": "echo.echo.streamserver.cnbc.prod",
-		"rpxAppName": "cnbc-echo"
+		"rpxAppName": "cnbc-echo",
+		"stage": typeof stage !== "undefined" ? stage : 0
 	}
 });
