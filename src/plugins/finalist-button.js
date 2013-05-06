@@ -3,7 +3,7 @@
 
 var $ = jQuery;
 
-var plugin = Echo.Plugin.manifest("MarkerButton", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("FinalistButton", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 

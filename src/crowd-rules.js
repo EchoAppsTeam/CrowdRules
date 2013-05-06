@@ -82,8 +82,8 @@ CrowdRules.dependencies = [{
 	"plugin": "Echo.StreamServer.Controls.Stream.Item.Vote",
 	"url": "{config:domainPrefix}/plugins/vote.js"
 }, {
-	"plugin": "Echo.StreamServer.Controls.Stream.Item.MarkerButton",
-	"url": "{config:domainPrefix}/plugins/marker-button.js"
+	"plugin": "Echo.StreamServer.Controls.Stream.Item.FinalistButton",
+	"url": "{config:domainPrefix}/plugins/finalist-button.js"
 }, {
 	"plugin": "Echo.StreamServer.Controls.Stream.WithoutMore",
 	"url": "{config:domainPrefix}/plugins/without-more.js"
@@ -510,7 +510,7 @@ CrowdRules.methods._getMetadata = function() {
 					}
 				}]
 			}, $.extend({}, this.config.get("finalist"), {
-				"name": "MarkerButton"
+				"name": "FinalistButton"
 			}), {
 				"name": "VideoContent"
 			}]
