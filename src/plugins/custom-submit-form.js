@@ -20,24 +20,25 @@ plugin.labels = {
 	"processingMedia": "Processing media link. Please wait...",
 	"noMediaFound": "No media content was detected. The link will be displayed as is.",
 	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
-	"counterText": "Description limit is {limit} characters, {typed} typed so far."
+	"counterText": "Description limit is {limit} characters, {typed} typed so far.",
+	"loginMessage": "Please, login to submit your entry"
 };
 
 plugin.init = function() {
-	var self = this;
+	var self = this, submit = this.component;
 
 	// replace the whole template
 	this.extendTemplate("replace", "container", plugin.templates.main);
 
 	// validator to define non-empty values for the name and text values
-	this.component.addPostValidator(function() {
+	submit.addPostValidator(function() {
 		self.component.view.get("name").val("-");
 		self.component.view.get("text").val("-");
 		return true;
 	}, "high");
 
 	// define validators for the newly added fields
-	this.component.addPostValidator(function() {
+	submit.addPostValidator(function() {
 		var valid = true;
 		$.each(["businessName", "videoURL", "description"], function (i, field) {
 			valid = !self.component.highlightMandatory(self.view.get(field));
@@ -45,6 +46,9 @@ plugin.init = function() {
 		});
 		return valid;
 	}, "low");
+	submit.addPostValidator(function() {
+		return submit.user.is("logged");
+	});
 };
 
 plugin.events = {
@@ -89,6 +93,9 @@ plugin.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="alert alert-success {plugin.class:confirmation}">' +
 			'{plugin.label:submitConfirmation}' +
+		'</div>' +
+		'<div class="alert alert-danger {plugin.class:loginMessage}">' +
+			'{plugin.label:loginMessage}' +
 		'</div>' +
 		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:businessName} {plugin.class:input}" type="text">' +
@@ -184,9 +191,30 @@ plugin.renderers.description = function(element) {
 			}
 		}
 		self.view.render({"name": "charsCounter"});
-        };
-        return element.on("blur focus keyup keypress", handler);
+	};
+	return element.on("blur focus keyup keypress", handler);
 };
+
+plugin.renderers.loginMessage = function(element) {
+	return element[this.component.user.is("logged") ? "hide" : "show"]();
+};
+
+$.map(["businessName", "videoURL", "description", "postButton"], function(name) {
+	var object = name in plugin.renderers
+		? plugin.renderers
+		: plugin.component.renderers;
+	var renderer = object[name] || function() {
+		return this.parentRenderer(name, arguments);
+	};
+	object[name] = function(element) {
+		if (!this.component.user.is("logged")) {
+			element.attr("disabled", true);
+			element.addClass("disabled");
+			element.parent().addClass(this.cssPrefix + "disabled");
+		}
+		return renderer.apply(this, arguments);
+	};
+});
 
 plugin.methods._putHint = function(element, label) {
 	return element.val("").blur().iHint({
@@ -204,7 +232,11 @@ plugin.css =
 	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
 	'.{plugin.class:charsCounter} { float: left; margin: 5px 0px 0px 2px; font-size: 12px; color: #555555; }' +
-	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }';
+	'.{plugin.class:loginMessage} { display: none; }' +
+	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }' +
+	'.{plugin.class:disabled} { padding: 0; }' +
+	'.{plugin.class:disabled} input[type="text"].{plugin.class:input}, .{plugin.class:disabled} textarea.{plugin.class:input} { border-radius: 0; }' +
+	'.{plugin.class:disabled} input[type="text"].{plugin.class:input} { height: 26px; }';
 
 Echo.Plugin.create(plugin);
 
