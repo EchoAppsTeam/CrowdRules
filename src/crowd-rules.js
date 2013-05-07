@@ -120,9 +120,6 @@ CrowdRules.templates.user =
 				'<div class="{class:header}">' +
 					'<div class="{class:auth}"></div>' +
 					'<div class="{class:title}"></div>' +
-					'<div class="{class:submitToggleButtonContainer}">' +
-						'<div class="btn btn-mini {class:submitToggleButton}">{label:enterBusiness}</div>' +
-					'</div>' +
 					'<div class="echo-clear"></div>' +
 				'</div>' +
 				'<div class="{class:userContent}">' +
@@ -254,7 +251,7 @@ CrowdRules.renderers.auth = function(element) {
 };
 
 CrowdRules.renderers.submit = function(element) {
-	var metadata = this.get("metadata")["submit"];
+	var metadata = this.get("metadata.submit");
 	metadata.visible && new Echo.StreamServer.Controls.Submit($.extend({
 		"target": element,
 		"appkey": this.config.get("appkey"),
@@ -270,31 +267,24 @@ CrowdRules.renderers.submit = function(element) {
 };
 
 CrowdRules.renderers.title = function(element) {
-	var metadata = this.get("metadata")["tabs"];
-	element.empty();
-	// TODO: more flexible solution to fetch data is needed
-	$.each(metadata, function(key, entry) {
-		element.append(entry.tab.label);
-		return false;
-	});
-	return element;
+	var metadata = this.get("metadata.tabs.contestans");
+	return element.empty().append(metadata.tab.label);
 };
 
 CrowdRules.renderers.content = function(element) {
-	var self = this, metadata = this.get("metadata")["tabs"];
+	var self = this, metadata = this.get("metadata.tabs.contestans");
+	if (!metadata.visible) {
+		return element.hide();
+	}
 	element.empty();
-	// TODO: more flexible solution to fetch data is needed
-	$.each(metadata, function(key, entry) {
-		self._toggleSorter(element, entry.sorter);
-		self._toggleStream(element, entry.stream);
-		return false;
-	});
+	this._toggleSorter(element, metadata.sorter);
+	this._toggleStream(element, metadata.stream);
 	return element;
 };
 
 CrowdRules.renderers.tabs = function(element) {
 	var self = this;
-	var metadata = this.get("metadata")["tabs"];
+	var metadata = this.get("metadata.tabs");
 	this.tabs = new Echo.GUI.Tabs({
 		"target": element,
 		"entries": $.map(metadata, function(entry) { return entry.visible && entry.tab }),
@@ -418,6 +408,52 @@ CrowdRules.methods._getMetadata = function() {
 // Stage 0
 "tabs": {
 	"contestans": {
+		"visible": this.user.is("admin"),
+		"sorter": {
+			"visible": true
+		},
+		"stream": {
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}, {
+				"name": "VideoContent"
+			}]
+		},
+		"tab": {
+			"id": "contestans",
+			"label": "Contestants"
+		}
+	},
+	"constentants-curation": {
+		"visible": this.user.is("admin"),
+		"sorter": {
+			"visible": true
+		},
+		"stream": {
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched,SystemFlagged user.state:Untouched,ModeratorApproved safeHTML:permissive children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"item": {"reTag": false},
+			"plugins": [{
+				"name": "Moderation"
+			}, {
+				"name": "VideoContent"
+			}]
+		},
+		"tab": {
+			"id": "constentants-curation",
+			"label": "Contestants Curation"
+		}
+	}
+},
+"submit": {
+	"visible": !this.user.is("admin")
+}
+// End of Stage 0
+},{
+// Stage 1
+"tabs": {
+	"contestans": {
 		"visible": true,
 		"sorter": {
 			"visible": true
@@ -473,11 +509,11 @@ CrowdRules.methods._getMetadata = function() {
 	}
 },
 "submit": {
-	"visible": true
+	"visible": false
 }
-// End of Stage0
+// End of Stage 1
 }, {
-// Stage 1
+// Stage 2
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -546,9 +582,9 @@ CrowdRules.methods._getMetadata = function() {
 "submit": {
 	"visible": false
 }
-// End of Stage 1
+// End of Stage 2
 }, {
-// Stage 2
+// Stage 3
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -584,9 +620,9 @@ CrowdRules.methods._getMetadata = function() {
 "submit": {
 	"visible": false
 }
-// End of Stage 2
+// End of Stage 3
 }, {
-// Stage 3
+// Stage 4
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -616,13 +652,13 @@ CrowdRules.methods._getMetadata = function() {
 "submit": {
 	"visible": false
 }
-// End of Stage 3
+// End of Stage 4
 }];
 };
 
 CrowdRules.css =
 	'.{class:container} { padding: 20px; margin-bottom: 50px; }' +
-	'.{class:submit} { display: none; margin-bottom: 20px; }' +
+	'.{class:submit} { margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
 	'.{class:content} { border-top: 1px solid #dddddd; }' +
@@ -657,7 +693,6 @@ CrowdRules.css =
 	'.{class:viewContestants} div { margin-left: 25px; }' +
 	'.{class:permalinkContainer} { margin-top: 20px; }' +
 	'.echo-sdk-ui .echo-control-message { padding: 45px; }' +
-	'.echo-sdk-ui div.{class:submitToggleButton} { letter-spacing: normal;  float: left; margin-left: 20px; }' +
 	'.echo-sdk-ui .{class:container} a { color: #476CB8; }';
 
 Echo.App.create(CrowdRules);
