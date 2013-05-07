@@ -118,10 +118,12 @@ CrowdRules.templates.user =
 		'<div class="{class:main}">' +
 			'<div class="{class:mainWrapper}">' +
 				'<div class="{class:header}">' +
-					'<div class="{class:auth}"></div>' +
 					'<div class="{class:title}"></div>' +
 					'<div class="echo-clear"></div>' +
+					'<div class="{class:intro}"></div>' +
 				'</div>' +
+				'<div class="{class:auth}"></div>' +
+				'<div class="echo-clear"></div>' +
 				'<div class="{class:userContent}">' +
 					'<div class="{class:submit}"></div>' +
 					'<div class="{class:content}"></div>' +
@@ -264,6 +266,13 @@ CrowdRules.renderers.submit = function(element) {
 		}]
 	}, this.config.get("submit")));
 	return element;
+};
+
+CrowdRules.renderers.intro = function(element) {
+	var metadata = this.get("metadata.intro");
+	return metadata.visible
+		? element.empty().append(metadata.content)
+		: element.hide();
 };
 
 CrowdRules.renderers.title = function(element) {
@@ -448,6 +457,10 @@ CrowdRules.methods._getMetadata = function() {
 },
 "submit": {
 	"visible": !this.user.is("admin")
+},
+"intro": {
+	"visible": true,
+	"content": "How to upload a video?"
 }
 // End of Stage 0
 },{
@@ -510,6 +523,10 @@ CrowdRules.methods._getMetadata = function() {
 },
 "submit": {
 	"visible": false
+},
+"intro": {
+	"visible": true,
+	"content": "How to upload a video?"
 }
 // End of Stage 1
 }, {
@@ -581,6 +598,10 @@ CrowdRules.methods._getMetadata = function() {
 },
 "submit": {
 	"visible": false
+},
+"intro": {
+	"visible": true,
+	"content": "How to upload a video?"
 }
 // End of Stage 2
 }, {
@@ -619,6 +640,10 @@ CrowdRules.methods._getMetadata = function() {
 },
 "submit": {
 	"visible": false
+},
+"intro": {
+	"visible": true,
+	"content": "How to upload a video?"
 }
 // End of Stage 3
 }, {
@@ -651,6 +676,10 @@ CrowdRules.methods._getMetadata = function() {
 },
 "submit": {
 	"visible": false
+},
+"intro": {
+	"visible": true,
+	"content": "How to upload a video?"
 }
 // End of Stage 4
 }];
@@ -660,6 +689,7 @@ CrowdRules.css =
 	'.{class:container} { padding: 20px; margin-bottom: 50px; }' +
 	'.{class:submit} { margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
+	'.{class:intro} { margin-left: 5px; margin-top: 10px; }' +
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
 	'.{class:content} { border-top: 1px solid #dddddd; }' +
 	'.{class:userContent} { margin-top: 10px; }' +
