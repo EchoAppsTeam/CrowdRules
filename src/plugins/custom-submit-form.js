@@ -9,7 +9,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"descriptionLimit": 1000,
-	"videoMaxWidth": 480, // in px
+	"videoMaxWidth": 402, // in px
 	"confirmationDisplayTimeout": 5000 // 5 sec
 };
 

@@ -695,9 +695,9 @@ CrowdRules.css =
 	'.{class:userContent} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
-	'.{class:mainWrapper} { margin-right: 225px; }' +
-	'.{class:right} { margin-left: -225px; }' +
-	'.{class:rightWrapper} { width: 200px; margin-left: 25px; }' +
+	'.{class:mainWrapper} { margin-right: 350px; }' +
+	'.{class:right} { margin-left: -350px; }' +
+	'.{class:rightWrapper} { width: 325px; margin-left: 25px; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
 	'.{class:itemWinner} { background-color: #ffff99; }' +
@@ -714,6 +714,7 @@ CrowdRules.css =
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-container-child { margin-right: 78px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar { width: 36px; }' +

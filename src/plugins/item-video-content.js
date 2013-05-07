@@ -8,7 +8,7 @@ var plugin = Echo.Plugin.manifest("VideoContent", "Echo.StreamServer.Controls.St
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
-	"previewMaxWidth": "480px"
+	"previewMaxWidth": "402px"
 };
 
 plugin.component.renderers.text = function(element) {
