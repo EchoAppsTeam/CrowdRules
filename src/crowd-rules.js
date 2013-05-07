@@ -219,6 +219,9 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 	metadata.plugins.push({
 		"name": "WithoutMore"
 	});
+	metadata.plugins = $.grep(metadata.plugins, function(plugin) {
+		return plugin.name !== "ItemWinner";
+	});
 	this._toggleStream(element, $.extend(true, metadata, {
 		"query": this.substitute({
 			"template": "url:http://{data:domain}/ECHO/item/{data:id} {data:rest}",
