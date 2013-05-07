@@ -21,7 +21,7 @@ plugin.labels = {
 	"noMediaFound": "No media content was detected. The link will be displayed as is.",
 	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
 	"counterText": "Description limit is {limit} characters, {typed} typed so far.",
-	"loginMessage": "Please, login to submit your entry"
+	"loginMessage": "Please login to submit your entry"
 };
 
 plugin.init = function() {
