@@ -460,7 +460,7 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "How to upload a video?"
+	"content": "Stage 1 'Submission' description"
 }
 // End of Stage 0
 },{
@@ -526,7 +526,7 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "How to upload a video?"
+	"content": "Stage 2 'Voting' description"
 }
 // End of Stage 1
 }, {
@@ -601,7 +601,7 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "How to upload a video?"
+	"content": "Stage 3 'Finalists' description"
 }
 // End of Stage 2
 }, {
@@ -643,7 +643,7 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "How to upload a video?"
+	"content": "Stage 4 'Final voting' description"
 }
 // End of Stage 3
 }, {
@@ -679,7 +679,7 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "How to upload a video?"
+	"content": "Stage 5 'Winner' description"
 }
 // End of Stage 4
 }];
