@@ -11,6 +11,7 @@ CrowdRules.vars = {
 	"auth": null,
 	"authWaitingQueue": [],
 	"query": "",
+	"fragment": "",
 	"metadata": {}
 };
 
@@ -223,10 +224,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
 				"rest": "itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
 			}
-		}),
-		"ready": function() {
-			self.view.render({"name": "finalistActivityTitle"});
-		}
+		})
 	}));
 	return element;
 };
@@ -309,11 +307,22 @@ CrowdRules.renderers.tabs = function(element) {
 };
 
 CrowdRules.renderers.finalistActivityTitle = function(element) {
-	var stream = this.get("stream");
-	if (stream && this.config.get("stageIndex") > 1) {
-		var businessName = $.parseJSON(stream.threads[0].get("data.object.content")).businessName;
-		element.empty().append(this.labels.get("finalistLifestream") + "<span>" + businessName + "</span>");
-	}
+	var self = this;
+	var stream = this.get("stream"), businessName;
+	if (!stream || this.config.get("stageIndex") < 2) return element.empty();
+	$.map(["Echo.StreamServer.Controls.Stream.onRender", "Echo.StreamServer.Controls.Stream.onRefresh"], function(topic) {
+		var handlerId = Echo.Events.subscribe({
+			"topic": topic,
+			"context": stream.config.get("context"),
+			"handler": function(topic, args) {
+				self.events.unsubscribe({"handlerId": handlerId});
+				try {
+					businessName = $.parseJSON(stream.threads[0].get("data.object.content")).businessName;
+					element.empty().append(self.labels.get("finalistLifestream") + "<span>" + businessName + "</span>");
+				} catch(e) {}
+			}
+		});
+	});
 	return element;
 };
 
@@ -349,24 +358,21 @@ CrowdRules.methods._getFragment = function(fragment) {
 CrowdRules.methods._navigate = function(fragment) {
 	var frag = (fragment || this._getFragment()).replace(/^#*/, "");
 	if (this.fragment === frag || this.fragment === decodeURIComponent(frag)) return;
-	window.location.hash = this.fragment = "!" + frag;
+	this.fragment = frag;
+	window.location.hash = "!" + frag;
 	this.refresh();
 };
 
 CrowdRules.methods._toggleStream = function(container, config) {
-	var self = this, stream = this.get("stream"), ready;
+	var self = this, stream = this.get("stream");
 	if (typeof stream === "undefined") {
-		ready = config.ready || $.noop;
-		delete config.ready;
-		new Echo.StreamServer.Controls.Stream($.extend({
+		this.stream = new Echo.StreamServer.Controls.Stream($.extend({
 			"target": $("<div>"),
 			"appkey": this.config.get("appkey"),
 			"context": this.config.get("context"),
 			"ready": function() {
 				self.set("query", this.config.get("query"));
-				self.set("stream", this);
 				container.append(this.config.get("target"));
-				ready.apply(this, arguments);
 			}
 		}, this.config.get("stream"), config));
 	} else {
