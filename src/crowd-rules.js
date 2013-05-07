@@ -92,11 +92,7 @@ CrowdRules.events = {
 			if (key === "all") {
 				stream.config.set("query", query);
 			} else {
-				// TODO: more flexible solution is needed
-				stream.config.set("query", query.replace(
-					"children:1",
-					"markers:\"alpha:" + key + "\" children:1"
-				));
+				stream.config.set("query", "markers:\"alpha:" + key + "\" " + query);
 			}
 			stream.refresh();
 		}
