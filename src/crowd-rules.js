@@ -36,6 +36,10 @@ CrowdRules.config = {
 		"attributes": {
 			"state": "ModeratorApproved"
 		}
+	},
+	// TODO: define this object before stage 4
+	"lifestreamTargets": {
+		//permalink_id : targetURL
 	}
 };
 
@@ -337,9 +341,14 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 			"reTag": false
 		},
 		"query": this.substitute({
-			"template": "childrenof:http://{data:domain}/ECHO/item/{self:permalinkId} {data:rest}",
+			"template": "childrenof:{data:target} {data:rest}",
 			"data": {
-				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
+				"target": this.config.get("lifestreamTargets." + this.permalinkId, this.substitute({
+					"template": "http://{data:domain}/ECHO/item/{self:permalinkId}",
+					"data": {
+						"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com"
+					}
+				})),
 				"rest": "itemsPerPage:5 children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
 			}
 		})
