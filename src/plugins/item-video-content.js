@@ -12,11 +12,16 @@ plugin.config = {
 };
 
 plugin.component.renderers.text = function(element) {
-	var text = this.component.get("data.object.content");
 	var data, el, self = this;
+	var item = this.component;
+	var text = item.get("data.object.content");
 	// FIXME: remove try/catch before production init
 	try {
 		data = $.parseJSON(text);
+		if (item.config.get("contentTransformations." + item.get("data.object.content_type"), {}).newlines) {
+			data.description = data.description.replace(/\n\n+/g, "\n\n");
+			data.description = data.description.replace(/\n/g, "&nbsp;<br>");
+		}
 		data.media = decodeURIComponent(data.media);
 		el = $(this.substitute({
 			"template": plugin.templates.content(data.previewURL ? "preview" : "full"),
