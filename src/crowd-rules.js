@@ -760,7 +760,8 @@ CrowdRules.css =
 	'.{class:viewContestants} div { margin-left: 25px; }' +
 	'.{class:permalinkContainer} { margin-top: 20px; }' +
 	'.echo-sdk-ui .echo-control-message { padding: 45px; }' +
-	'.echo-sdk-ui .{class:container} a { color: #476CB8; }';
+	'.echo-sdk-ui .{class:container} a { color: #476CB8; }' +
+	'.echo-sdk-ui h3 { text-transform: none; }';
 
 Echo.App.create(CrowdRules);
 
