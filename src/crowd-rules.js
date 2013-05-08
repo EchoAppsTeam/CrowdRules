@@ -708,7 +708,7 @@ CrowdRules.methods._getMetadata = function() {
 };
 
 CrowdRules.css =
-	'.{class:container} { padding: 20px; margin-bottom: 50px; }' +
+	'.{class:container} { font-size: 14px; line-height: 20px; padding: 20px; margin-bottom: 50px; }' +
 	'.{class:submit} { margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
 	'.{class:intro} { margin-left: 5px; margin-top: 10px; }' +
@@ -729,6 +729,7 @@ CrowdRules.css =
 	'.{class:main} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
 	'.{class:main} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
 	// stream control styles
+	'.{class:container} .echo-streamserver-controls-stream-item-button { font-weight: normal!important; }' +
 	'.{class:main} .echo-streamserver-controls-stream-header{ display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
