@@ -745,11 +745,12 @@ CrowdRules.css =
 	// stream control styles
 	'.{class:container} .echo-streamserver-controls-stream-item-button { font-weight: normal!important; }' +
 	'.{class:main} .echo-streamserver-controls-stream, .{class:main} .echo-streamserver-controls-submit { width: 570px; margin-left: 175px; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-plugin-Reply-replyForm .echo-streamserver-controls-submit { width: auto; margin-left: 68px; }' +
 	'.{class:withSidebar} .{class:main} .echo-streamserver-controls-stream, .{class:withSidebar} .{class:main} .echo-streamserver-controls-submit { width: auto; margin-left: 0; }' +
 	'.{class:main} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
-	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear { clear: left; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-plugin-Moderation-status { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
