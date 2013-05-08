@@ -23,6 +23,7 @@ plugin.component.renderers.text = function(element) {
 			data.description = data.description.replace(/\n/g, "&nbsp;<br>");
 		}
 		data.media = decodeURIComponent(data.media);
+		data.user = data.personalName || data.user;
 		el = $(this.substitute({
 			"template": plugin.templates.content(data.previewURL ? "preview" : "full"),
 			"data": data

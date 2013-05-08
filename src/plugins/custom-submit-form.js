@@ -10,18 +10,21 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.config = {
 	"descriptionLimit": 1000,
 	"videoMaxWidth": 402, // in px
-	"confirmationDisplayTimeout": 5000 // 5 sec
+	"confirmationDisplayTimeout": 60000 // 1 min (in ms)
 };
 
 plugin.labels = {
-	"businessNameHint": "Your Business name",
-	"videoURLHint": "Your video URL",
+	"personalNameHint": "Name",
+	"personalEmailHint": "Email",
+	"businessNameHint": "Your Business Name",
+	"videoURLHint": "Your Video URL",
 	"descriptionHint": "Description of the Business",
 	"processingMedia": "Processing media link. Please wait...",
 	"noMediaFound": "No media content was detected. The link will be displayed as is.",
 	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
 	"counterText": "Description limit is {limit} characters, {typed} typed so far.",
-	"loginMessage": "Please login to submit your entry"
+	"loginMessage": "Please login to submit your entry",
+	"termsAndConditions": "I have read and accept the <a href=\"#\" target=\"_blank\">terms of service</a>"
 };
 
 plugin.init = function() {
@@ -40,12 +43,19 @@ plugin.init = function() {
 	// define validators for the newly added fields
 	submit.addPostValidator(function() {
 		var valid = true;
-		$.each(["businessName", "videoURL", "description"], function (i, field) {
+		$.each(["personalName", "personalEmail", "businessName", "videoURL", "description"], function (i, field) {
 			valid = !self.component.highlightMandatory(self.view.get(field));
 			return valid;
 		});
 		return valid;
 	}, "low");
+	submit.addPostValidator(function() {
+		if (!self.view.get("termsAndConditions").is(":checked")) {
+			self.view.get("termsAndConditionsText").addClass(self.cssPrefix + "mandatory");
+			return false;
+		}
+		return true;
+	}, "high");
 	submit.addPostValidator(function() {
 		return submit.user.is("logged");
 	});
@@ -62,6 +72,8 @@ plugin.events = {
 		var marker = /[a-z]/.test(firstChar) ? firstChar : "other";
 		args.postData.content[0].object.content = Echo.Utils.objectToJSON({
 			"businessName": businessName,
+			"personalName": valueOf("personalName"),
+			"personalEmail": valueOf("personalEmail"),
 			"user": submit.user.get("name"),
 			"media": self.get("mediaContent", ""),
 			"previewURL": self.get("previewURL", ""),
@@ -76,9 +88,10 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var self = this, confirmation = this.view.get("confirmation");
 		// reset fields after successful submission...
-		$.map(["businessName", "videoURL", "description"], function(name) {
+		$.map(["personalName", "personalEmail", "businessName", "videoURL", "description"], function(name) {
 			self.view.render({"name": name});
 		});
+		this.view.get("termsAndConditionsText").removeClass(this.cssPrefix + "mandatory");
 		this.set("mediaContent", "");
 		this.view.get("videoPreview").hide();
 		this.view.render({"name": "charsCounter"});
@@ -98,6 +111,12 @@ plugin.templates.main =
 			'{plugin.label:loginMessage}' +
 		'</div>' +
 		'<div class="{plugin.class:inputContainer}">' +
+			'<input class="{plugin.class:personalName} {plugin.class:input}" type="text">' +
+		'</div>' +
+		'<div class="{plugin.class:inputContainer}">' +
+			'<input class="{plugin.class:personalEmail} {plugin.class:input}" type="text">' +
+		'</div>' +
+		'<div class="{plugin.class:inputContainer}">' +
 			'<input class="{plugin.class:businessName} {plugin.class:input}" type="text">' +
 		'</div>' +
 		'<div class="{plugin.class:inputContainer}">' +
@@ -115,7 +134,12 @@ plugin.templates.main =
 		'<input type="hidden" class="{class:markers}">' +
 
 		'<div class="{class:controls}">' +
-			'<div class="{plugin.class:charsCounter}"></div>' +
+			'<div class="{plugin.class:footer}">' +
+				'<div class="{plugin.class:charsCounter}"></div>' +
+				'<div class="{plugin.class:termsAndConditionsContainer}">' +
+					'<input type="checkbox" class="{plugin.class:termsAndConditions}"> <span class="{plugin.class:termsAndConditionsText}">{plugin.label:termsAndConditions}</span>' +
+				'</div>' +
+			'</div>' +
 			'<div class="{class:postContainer}">' +
 				'<div class="btn echo-primaryFont {class:postButton}"></div>' +
 			'</div>' +
@@ -125,6 +149,14 @@ plugin.templates.main =
 
 plugin.renderers.businessName = function(element) {
 	return this._putHint(element, "businessName");
+};
+
+plugin.renderers.personalName = function(element) {
+	return this._putHint(element, "personalName");
+};
+
+plugin.renderers.personalEmail = function(element) {
+	return this._putHint(element, "personalEmail");
 };
 
 plugin.renderers.charsCounter = function(element) {
@@ -199,7 +231,7 @@ plugin.renderers.loginMessage = function(element) {
 	return element[this.component.user.is("logged") ? "hide" : "show"]();
 };
 
-$.map(["businessName", "videoURL", "description", "postButton"], function(name) {
+$.map(["personalName", "personalEmail", "businessName", "videoURL", "description", "postButton"], function(name) {
 	var object = name in plugin.renderers
 		? plugin.renderers
 		: plugin.component.renderers;
@@ -228,13 +260,19 @@ plugin.css =
 	'.echo-sdk-ui input[type="text"].{plugin.class:input}, .echo-sdk-ui textarea.{plugin.class:input} { outline: 0 !important; box-shadow: none !important; padding: 0px; margin: 0px; border: 0px; width: 100%; }' +
 	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #DDDDDD; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation}.alert { font-weight: bold; margin: 10px 0px; }' +
-	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; }' +
+	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; margin-top: 15px; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
-	'.{plugin.class:charsCounter} { float: left; margin: 5px 0px 0px 2px; font-size: 12px; color: #555555; }' +
+	'.{plugin.class:footer} { float: left; margin: 0px 0px 0px 2px; }' +
+	'.{plugin.class:charsCounter} { font-size: 12px; color: #555555; }' +
 	'.{plugin.class:loginMessage} { display: none; }' +
 	'.echo-sdk-ui textarea.{plugin.class:description} { resize: none; }' +
 	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }' +
+	'.{plugin.class:termsAndConditionsContainer} { margin-top: 5px; }' +
+	'.{plugin.class:termsAndConditionsContainer} span { font-size: 12px; }' +
+	'.echo-sdk-ui input[type="checkbox"].{plugin.class:termsAndConditions} { margin: -2px 3px 0px 0px; }' +
+	'.{plugin.class:mandatory} { color: red; }' +
+	'.echo-sdk-ui .echo-apps-crowdrules-container .{plugin.class:mandatory} a { color: red; }' +
 	'.{plugin.class:disabled} { padding: 0; }' +
 	'.{plugin.class:disabled} input[type="text"].{plugin.class:input}, .{plugin.class:disabled} textarea.{plugin.class:input} { border-radius: 0; }' +
 	'.{plugin.class:disabled} input[type="text"].{plugin.class:input} { height: 26px; }';
