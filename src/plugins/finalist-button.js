@@ -14,7 +14,9 @@ plugin.config = {
 
 plugin.labels = {
 	"unmarkedTitle": "Make a Finalist",
-	"markedTitle": "Exclude from finalists"
+	"unmarkedChangingStatus": "Making a Finalist...",
+	"markedTitle": "Exclude from finalists",
+	"markedChangingStatus": "Excluding from finalists..."
 };
 
 plugin.init = function() {
@@ -24,6 +26,7 @@ plugin.init = function() {
 plugin.methods._assembleButton = function() {
 	var self = this, item = this.component;
 	var callback = function() {
+		item.block(self.labels.get((self._isMarked() ? "marked" : "unmarked") + "ChangingStatus"))
 		self._sendRequest({
 			"content": self._prepareActivity(
 				self._isMarked() ? "unmark" : "mark",
@@ -36,8 +39,10 @@ plugin.methods._assembleButton = function() {
 		}, function(response) {
 			// publish onComplete event if it's necessary
 			self.requestDataRefresh();
+			item.unblock();
 		}, function(response) {
 			// publish onError event if it's necessary
+			item.unblock();
 		});
 	};
 	return function() {
