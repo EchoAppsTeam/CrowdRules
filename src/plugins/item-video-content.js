@@ -47,6 +47,22 @@ plugin.component.renderers.text = function(element) {
 	return element.empty().append(data ? el : text);
 };
 
+plugin.component.renderers.date = function(element) {
+	var item = this.component;
+	return !item.user.is("admin") && item.isRoot()
+		? element.hide()
+		: this.parentRenderer("date", arguments);
+};
+
+plugin.component.renderers.buttons = function(element) {
+	var item = this.component;
+	element = this.parentRenderer("buttons", arguments);
+	if (!item.user.is("admin") && item.isRoot()) {
+		element.children(":first").hide();
+	}
+	return element;
+};
+
 plugin.templates.content = function(mode) {
 	var embed = mode === "full"
 		? "{data:media}"
