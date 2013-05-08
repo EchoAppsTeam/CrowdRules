@@ -147,9 +147,7 @@ CrowdRules.templates.user =
 			'</div>' +
 		'</div>' +
 		'<div class="{class:right}">' +
-			'<div class="{class:rightWrapper}">' +
-				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
-			'</div>' +
+			'<div class="{class:rightWrapper}"></div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -170,9 +168,7 @@ CrowdRules.templates.admin =
 			'</div>' +
 		'</div>' +
 		'<div class="{class:right}">' +
-			'<div class="{class:rightWrapper}">' +
-				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
-			'</div>' +
+			'<div class="{class:rightWrapper}"></div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -191,13 +187,19 @@ CrowdRules.templates.permalink =
 		'</div>' +
 		'<div class="{class:right}">' +
 			'<div class="{class:rightWrapper}">' +
-				'<div class="{class:adContainer}"><h1>Ad Unit</h1></div>' +
 				'<div class="{class:finalistActivityTitle}"></div>' +
 				'<div class="{class:finalistActivityStream}"></div>' +
 			'</div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
+
+CrowdRules.renderers.container = function(element) {
+	if (this.config.get("stageIndex") > 2 && /video\/[\d-]+/.test(window.location.hash)) {
+		element.addClass(this.cssPrefix + "withSidebar");
+	}
+	return element;
+};
 
 CrowdRules.renderers.submitToggleButton = function(element) {
 	var self = this;
@@ -730,20 +732,21 @@ CrowdRules.css =
 	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
-	'.{class:mainWrapper} { margin-right: 350px; }' +
-	'.{class:right} { margin-left: -350px; }' +
+	'.{class:right} { display: none; }' +
+	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; }' +
+	'.{class:withSidebar} .{class:right} { display: block; margin-left: -350px; }' +
 	'.{class:rightWrapper} { width: 325px; margin-left: 25px; }' +
-	'.{class:finalistActivityTitle} { font-size: 14px; }' +
+	'.{class:finalistActivityTitle} { font-size: 14px; text-align: right; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
 	'.{class:itemWinner} { background-color: #ffff99; }' +
-	// FIXME: temporary CSS rules. remove me!
-	'.{class:adContainer} { border: 1px dashed #000; text-align: center; height: 300px; padding-top: 100px; margin-bottom: 30px; }' +
 	// auth control styles
 	'.{class:main} .echo-identityserver-controls-auth-logout { font-size: 12px; line-height: 26px; margin-left: 10px; }' +
 	'.{class:main} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
 	// stream control styles
 	'.{class:container} .echo-streamserver-controls-stream-item-button { font-weight: normal!important; }' +
-	'.{class:main} .echo-streamserver-controls-stream-header{ display: none; }' +
+	'.{class:main} .echo-streamserver-controls-stream, .{class:main} .echo-streamserver-controls-submit { width: 570px; margin-left: 175px; }' +
+	'.{class:withSidebar} .{class:main} .echo-streamserver-controls-stream, .{class:withSidebar} .{class:main} .echo-streamserver-controls-submit { width: auto; margin-left: 0; }' +
+	'.{class:main} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-avatar { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-authorName { display: none; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-depth-0 .echo-streamserver-controls-stream-item-frame > div.echo-clear{ clear: left; }' +
@@ -754,6 +757,7 @@ CrowdRules.css =
 	'.{class:right} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar { width: 36px; }' +
+	'.{class:main} .echo-streamserver-controls-stream-item-plugin-VideoContent-description { padding-right: 75px; }' +
 	// bootstrap components styles
 	'.{class:container} .btn, .{class:container} .btn:hover { background-image: none!important; height: auto!important; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +
