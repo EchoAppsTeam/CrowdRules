@@ -140,9 +140,9 @@ CrowdRules.templates.user =
 				'</div>' +
 				'<div class="{class:auth}"></div>' +
 				'<div class="echo-clear"></div>' +
-				'<div class="{class:userContent}">' +
+				'<div class="{class:content}">' +
 					'<div class="{class:submit}"></div>' +
-					'<div class="{class:content}"></div>' +
+					'<div class="{class:contestans}"></div>' +
 				'</div>' +
 			'</div>' +
 		'</div>' +
@@ -158,7 +158,12 @@ CrowdRules.templates.admin =
 	'<div class="{class:container}">' +
 		'<div class="{class:main}">' +
 			'<div class="{class:mainWrapper}">' +
-				'<div class="{class:adminContent}">' +
+				'<div class="{class:header}">' +
+					'<div class="{class:title}"></div>' +
+					'<div class="echo-clear"></div>' +
+					'<div class="{class:intro}"></div>' +
+				'</div>' +
+				'<div class="{class:content}">' +
 					'<div class="{class:auth}" style="float: right;"></div>' +
 					'<div class="{class:tabs}"></div>' +
 				'</div>' +
@@ -295,11 +300,10 @@ CrowdRules.renderers.intro = function(element) {
 };
 
 CrowdRules.renderers.title = function(element) {
-	var metadata = this.get("metadata.tabs.contestans");
-	return element.empty().append(metadata.tab.label);
+	return element.empty().append(this.get("metadata.title"));
 };
 
-CrowdRules.renderers.content = function(element) {
+CrowdRules.renderers.contestans = function(element) {
 	var self = this, metadata = this.get("metadata.tabs.contestans");
 	if (!metadata.visible) {
 		return element.hide();
@@ -439,6 +443,7 @@ CrowdRules.methods._getMetadata = function() {
 	var identityManagerItem = this.config.get("identityManager");
 	return [{
 // Stage 0
+"title": this.user.is("admin") ? "Contestans" : "Submit the business",
 "tabs": {
 	"contestans": {
 		"visible": this.user.is("admin"),
@@ -489,6 +494,7 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 0
 },{
 // Stage 1
+"title": "Contestans",
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -556,6 +562,7 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 1
 }, {
 // Stage 2
+"title": "Top 10 Contestans",
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -631,6 +638,7 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 2
 }, {
 // Stage 3
+"title": "Finalists",
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -674,6 +682,7 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 3
 }, {
 // Stage 4
+"title": "Finalists",
 "tabs": {
 	"contestans": {
 		"visible": true,
@@ -717,8 +726,8 @@ CrowdRules.css =
 	'.{class:auth} { float: right; }' +
 	'.{class:intro} { margin-left: 5px; margin-top: 10px; }' +
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
-	'.{class:content} { border-top: 1px solid #dddddd; }' +
-	'.{class:userContent} { margin-top: 10px; }' +
+	'.{class:contestans} { border-top: 1px solid #dddddd; }' +
+	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
 	'.{class:mainWrapper} { margin-right: 350px; }' +
