@@ -223,6 +223,11 @@ module.exports = function(grunt) {
 		_.each(copy.js.files, function(src, dest) {
 			grunt.file.expandFiles(src).map(function(name) {
 				name = name.replace(reRelative, "");
+
+				// exclude JS files from "third-party"
+				// folder from minification
+				if (/third-party/.test(name)) return;
+
 				spec[name] = {
 					"src": "<%= dirs.build %>/" + name,
 					"dest": "<%= dirs.build %>/" + name

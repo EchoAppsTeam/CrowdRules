@@ -104,7 +104,7 @@ plugin.templates.main =
 			'<input class="{plugin.class:videoURL} {plugin.class:input}" type="text">' +
 		'</div>' +
 		'<div class="{plugin.class:videoPreview}"></div>' +
-		'<div class="{plugin.class:inputContainer}">' +
+		'<div class="{plugin.class:inputContainer} {plugin.class:descriptionContainer}">' +
 			'<textarea class="{plugin.class:description} {plugin.class:input}"></textarea>' +
 		'</div>' +
 
@@ -177,9 +177,9 @@ plugin.renderers.videoURL = function(element) {
 };
 
 plugin.renderers.description = function(element) {
+	var self = this, limit = this.config.get("descriptionLimit", 0);
+	element.css({"height": "55px"}).autosize({"append": "\n"});
 	this._putHint(element, "description");
-	var self = this;
-	var limit = this.config.get("descriptionLimit", 0);
 	var handler = function() {
 		if (limit) {
 			var text = element.val();
@@ -233,6 +233,7 @@ plugin.css =
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
 	'.{plugin.class:charsCounter} { float: left; margin: 5px 0px 0px 2px; font-size: 12px; color: #555555; }' +
 	'.{plugin.class:loginMessage} { display: none; }' +
+	'.echo-sdk-ui textarea.{plugin.class:description} { resize: none; }' +
 	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }' +
 	'.{plugin.class:disabled} { padding: 0; }' +
 	'.{plugin.class:disabled} input[type="text"].{plugin.class:input}, .{plugin.class:disabled} textarea.{plugin.class:input} { border-radius: 0; }' +
