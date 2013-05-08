@@ -40,6 +40,18 @@ CrowdRules.config = {
 	// TODO: define this object before stage 4
 	"lifestreamTargets": {
 		//permalink_id : targetURL
+	},
+	"sharing": {
+		"appId": "doncbejeaomipmgkaaeb", // TODO: replace appId to a production one
+		"xdReceiver": "http://cdn.echoenabled.com/apps/echo/crowd-rules/third-party/rpx_xdcomm.html",
+		"activity": {
+			"prompt": "Share your vote:",
+			"content": "I just voted for '{data:businessName}' on '{data:domain}'",
+			"page": {
+				"title": "",
+				"description": ""
+			}
+		}
 	}
 };
 
@@ -496,7 +508,8 @@ CrowdRules.methods._getMetadata = function() {
 				}]
 			}, {
 				"name": "Vote",
-				"launcher": authLauncher
+				"launcher": authLauncher,
+				"sharing": this.config.get("sharing")
 			}, {
 				"name": "VideoContent"
 			}]
@@ -635,7 +648,8 @@ CrowdRules.methods._getMetadata = function() {
 				}]
 			}, {
 				"name": "Vote",
-				"launcher": authLauncher
+				"launcher": authLauncher,
+				"sharing": this.config.get("sharing")
 			}, {
 				"name": "VideoContent"
 			}]

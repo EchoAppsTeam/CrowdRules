@@ -9,7 +9,9 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"readOnly": false, // if 'readOnly' is true then user cannot vote
-	"launcher": $.noop
+	"launcher": $.noop,
+	"sharing": {},
+	"sharingActions": ["Like"]
 };
 
 plugin.labels = {
@@ -22,6 +24,12 @@ plugin.init = function() {
 	if (!this.component.isRoot()) return false;
 	this.extendTemplate("insertAfter", "avatar", plugin.templates.main);
 };
+
+plugin.dependencies = [{
+	"loaded": function() { return !!window.RPXNOW; },
+	"url": ("https:" === document.location.protocol ?
+		"https://" : "http://static.") + "rpxnow.com/js/lib/rpx.js"
+}];
 
 plugin.templates.main =
 	'<div class="{plugin.class:container}">' +
@@ -122,6 +130,9 @@ plugin.methods._sendActivity = function(name, item, actor) {
 			"state": "Complete",
 			"response": response
 		});
+		if (plugin._isSharingEnabled(name)) {
+			plugin._shareContent(item);
+		}
 		plugin.requestDataRefresh();
 	}, function(response) {
 		plugin._publishEventComplete({
@@ -130,6 +141,43 @@ plugin.methods._sendActivity = function(name, item, actor) {
 			"response": response
 		});
 	});
+};
+
+plugin.methods._isSharingEnabled = function(action) {
+	return ~$.inArray(action, this.config.get("sharingActions"))
+		 && this.config.get("sharing.appId") && this.config.get("sharing.xdReceiver");
+};
+
+plugin.methods._shareContent = function(item) {
+	var self = this;
+	RPXNOW.init({
+		"appId": self.config.get("sharing.appId"),
+		"xdReceiver": self.config.get("sharing.xdReceiver")
+	});
+	RPXNOW.loadAndRun(["Social"], function() {
+		var activity = new RPXNOW.Social.Activity(
+			self.config.get("sharing.activity.prompt"),
+			self._prepareSharingContent(item),
+			self.config.get("sharing.activity.url", window.location.href)
+		);
+		RPXNOW.Social.publishActivity(self._prepareSharingActivity(activity));
+	});
+};
+
+plugin.methods._prepareSharingContent = function(item) {
+	var content = $.parseJSON(item.get("data.object.content"));
+	return this.substitute({
+		"template": this.config.get("sharing.activity.content"),
+		"data": $.extend({
+			"domain": window.location.host
+		}, content)
+	});
+};
+
+plugin.methods._prepareSharingActivity = function(activity) {
+	activity.setDescription(this.config.get("sharing.activity.page.description"));
+	activity.setTitle(this.config.get("sharing.activity.page.title"));
+	return activity;
 };
 
 plugin.methods._publishEventComplete = function(args) {
