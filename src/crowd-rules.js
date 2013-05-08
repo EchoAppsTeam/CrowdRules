@@ -31,11 +31,7 @@ CrowdRules.config = {
 		"url": ""
 	},
 	"finalist": {
-		"marker": "Finalist",
-		"postfix": "/finalists",
-		"attributes": {
-			"state": "ModeratorApproved"
-		}
+		"marker": "Finalist"
 	},
 	// TODO: define this object before stage 4
 	"lifestreamTargets": {
@@ -608,21 +604,15 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 markers:" + this.config.get("finalist.marker") +  " state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"plugins": [{
 				"name": "Vote",
 				"readOnly": true
 			}, {
 				"name": "VideoContent"
-			}, {
-				"name": "Moderation",
-				"itemActions": ["delete"],
-				"userActions": [],
-				"labels": {
-					"deleteButton": "Exclude from finalists",
-					"changingStatusToModeratorDeleted": "Excluding..."
-				}
-			}]
+			}, $.extend({}, this.config.get("finalist"), {
+				"name": "FinalistButton"
+			})]
 		},
 		"tab": {
 			"id": "finalists",
@@ -648,7 +638,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 markers:" + this.config.get("finalist.marker") + " state:ModeratorApproved,CommunityFlagged safeHTML:permissive sortOrder:flagsDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Reply",
@@ -662,10 +652,13 @@ CrowdRules.methods._getMetadata = function() {
 				}]
 			}, {
 				"name": "Vote",
+				"engine": "flags",
 				"launcher": authLauncher,
 				"sharing": this.config.get("sharing")
 			}, {
 				"name": "VideoContent"
+			}, {
+				"name": "Moderation"
 			}]
 		},
 		"tab": {
@@ -692,14 +685,17 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + this.config.get("finalist.postfix") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 markers:" + this.config.get("finalist.marker") + " state:ModeratorApproved,CommunityFlagged safeHTML:permissive sortOrder:flagsDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Vote",
+				"engine": "flags",
 				"readOnly": true,
 				"launcher": authLauncher
 			}, {
 				"name": "VideoContent"
+			}, {
+				"name": "Moderation"
 			}, {
 				"name": "ItemWinner",
 				"cssClass": this.cssPrefix + "itemWinner"

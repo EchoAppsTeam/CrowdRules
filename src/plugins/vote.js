@@ -8,10 +8,10 @@ var plugin = Echo.Plugin.manifest("Vote", "Echo.StreamServer.Controls.Stream.Ite
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
+	"engine": "likes", // likes || flags
 	"readOnly": false, // if 'readOnly' is true then user cannot vote
 	"launcher": $.noop,
-	"sharing": {},
-	"sharingActions": ["Like"]
+	"sharing": {}
 };
 
 plugin.labels = {
@@ -22,6 +22,7 @@ plugin.labels = {
 
 plugin.init = function() {
 	if (!this.component.isRoot()) return false;
+	this.set("engine", this._getEngineData());
 	this.extendTemplate("insertAfter", "avatar", plugin.templates.main);
 };
 
@@ -63,12 +64,12 @@ plugin.renderers.vote = function(element) {
 					.empty().append(self.labels.get("voted"));
 			})
 			.click(function() {
-				self._sendActivity("Unlike", item);
+				self._sendActivity(self.get("engine.cancel"), item);
 			});
 	} else {
 		element.removeClass("btn-success btn-danger active")
 			.on("click", function() {
-				self._sendActivity("Like", item);
+				self._sendActivity(self.get("engine.action"), item);
 			});
 	}
 	return element;
@@ -76,7 +77,7 @@ plugin.renderers.vote = function(element) {
 
 plugin.renderers.votesCount = function(element) {
 	var voted = this._hasVoted();
-	var votesCount = this.component.get("data.object.accumulators.likesCount", 0);
+	var votesCount = this.component.get("data.object.accumulators." + this.get("engine.key") + "Count", 0);
 	var cssClass = voted && !this.config.get("readOnly")
 		? "btn-success"
 		: (votesCount ? "btn-primary" : "");
@@ -87,9 +88,26 @@ plugin.renderers.votesCount = function(element) {
 		.append(votesCount);
 };
 
+plugin.methods._getEngineData = function() {
+	return {
+		"likes": {
+			"key": "likes",
+			"action": "Like",
+			"cancel": "Unlike",
+			"sharingActions": ["Like"]
+		},
+		"flags": {
+			"key": "flags",
+			"action": "Flag",
+			"cancel": "Unflag",
+			"sharingActions": ["Flag"]
+		}
+	}[this.config.get("engine")];
+};
+
 plugin.methods._hasVoted = function() {
 	var hasVoted = false, item = this.component;
-	$.each(item.get("data.object.likes"), function(key, entry) {
+	$.each(item.get("data.object." + this.get("engine.key")), function(key, entry) {
 		if (item.user.has("identity", entry.actor.id)) {
 			hasVoted = true;
 			return false;
@@ -144,7 +162,7 @@ plugin.methods._sendActivity = function(name, item, actor) {
 };
 
 plugin.methods._isSharingEnabled = function(action) {
-	return ~$.inArray(action, this.config.get("sharingActions"))
+	return ~$.inArray(action, this.get("engine.sharingActions"))
 		 && this.config.get("sharing.appId") && this.config.get("sharing.xdReceiver");
 };
 
