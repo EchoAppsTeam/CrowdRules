@@ -42,7 +42,7 @@ CrowdRules.config = {
 		//permalink_id : targetURL
 	},
 	"sharing": {
-		"appId": "doncbejeaomipmgkaaeb", // TODO: replace appId to a production one
+		"appId": "",
 		"xdReceiver": "http://cdn.echoenabled.com/apps/echo/crowd-rules/third-party/rpx_xdcomm.html",
 		"activity": {
 			"prompt": "Share your vote:",
@@ -58,6 +58,10 @@ CrowdRules.config = {
 CrowdRules.config.normalizer = {
 	"identityManager": function(o) {
 		o.url = o.url || "http://cdn.echoenabled.com/apps/echo/crowd-rules/third-party/login.html?app=" + this.get("rpxAppName") + "&token_url=http%3A%2F%2Fapps.echoenabled.com%2Fv2%2Fjanrain%2Fwaiting.html&bp_channel=";
+		return o;
+	},
+	"sharing": function(o) {
+		o.appId = o.appId || this.get("rpxAppId");
 		return o;
 	}
 };
