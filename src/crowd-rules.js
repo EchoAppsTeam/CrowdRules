@@ -70,6 +70,13 @@ CrowdRules.labels = {
 
 CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
+	var stageCSS = this.get("metadata.css");
+	if (stageCSS) {
+		Echo.Utils.addCSS(this.substitute({
+			"template": stageCSS,
+			"data": {"class": this.cssPrefix}
+		}));
+	}
 	this.render();
 	this.ready();
 	$(window).off("hashchange")
@@ -488,7 +495,10 @@ CrowdRules.methods._getMetadata = function() {
 "intro": {
 	"visible": true,
 	"content": "Stage 1 'Submission' description"
-}
+},
+"css": !this.user.is("admin")
+		? ".{class:mainWrapper} { margin-left: 175px; width: 570px; }"
+		: ".{class:mainWrapper} { margin-left: 0px; width: auto; }"
 // End of Stage 0
 },{
 // Stage 1
@@ -740,7 +750,7 @@ CrowdRules.css =
 	'.{class:main} .echo-identityserver-controls-auth-name { font-size: 14px; }' +
 	// stream control styles
 	'.{class:container} .echo-streamserver-controls-stream-item-button { font-weight: normal!important; }' +
-	'.{class:main} .echo-streamserver-controls-stream, .{class:main} .echo-streamserver-controls-submit { width: 570px; margin-left: 175px; }' +
+	'.{class:main} .echo-streamserver-controls-stream { margin-left: 175px; width: 570px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-plugin-Reply-replyForm .echo-streamserver-controls-submit { width: auto; margin-left: 68px; }' +
 	'.{class:withSidebar} .{class:main} .echo-streamserver-controls-stream, .{class:withSidebar} .{class:main} .echo-streamserver-controls-submit { width: auto; margin-left: 0; }' +
 	'.{class:main} .echo-streamserver-controls-stream-header { display: none; }' +
