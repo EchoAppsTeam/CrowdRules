@@ -15,6 +15,7 @@ plugin.component.renderers.text = function(element) {
 	var data, el, self = this;
 	var item = this.component;
 	var text = item.get("data.object.content");
+	var isAdmin = this.component.user.is("admin");
 	// FIXME: remove try/catch before production init
 	try {
 		data = $.parseJSON(text);
@@ -24,6 +25,7 @@ plugin.component.renderers.text = function(element) {
 		}
 		data.media = decodeURIComponent(data.media);
 		data.user = data.personalName || data.user;
+		data.email = isAdmin ? data.personalEmail : "";
 		el = $(this.substitute({
 			"template": plugin.templates.content(data.previewURL ? "preview" : "full"),
 			"data": data
@@ -43,6 +45,9 @@ plugin.component.renderers.text = function(element) {
 				var container = $(this).parent();
 				container.empty().append(data.media);
 			});
+		if (!isAdmin || !data.email) {
+			$("." + this.cssPrefix + "email", el).hide();
+		}
 	} catch (ex) {
 	}
 	return element.empty().append(data ? el : text);
@@ -70,7 +75,7 @@ plugin.templates.content = function(mode) {
 		: '<img src="{data:previewURL}" class="{plugin.class:previewImg} echo-clickable" title="Click to play video">';
 	return '<div class="{plugin.class:container}">' +
 		'<div class="{plugin.class:business-name} echo-linkColor">{data:businessName}</div>' +
-		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span></div>' +
+		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span> <span class="{plugin.class:email}">({data:email})</span></div>' +
 		'<div class="{plugin.class:embed-code}">' + embed + '</div>' +
 		'<div class="{plugin.class:description}">{data:description}</div>' +
 	'</div>';
