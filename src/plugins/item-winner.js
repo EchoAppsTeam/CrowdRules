@@ -7,7 +7,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onDataReceive": function(_, args) {
-		if (args.type === "initial") {
+		if (args.type === "initial" && args.entries.length) {
 			// add flag to first item
 			args.entries[0].winner = true
 		}

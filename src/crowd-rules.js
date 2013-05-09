@@ -250,7 +250,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 			"data": {
 				"id": fragment.replace(/[^\d-]+/, ""),
 				"domain": Echo.Utils.parseURL(this.config.get("targetURL")).domain || "example.com",
-				"rest": "itemsPerPage:1 children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
+				"rest": "itemsPerPage:1 children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved"
 			}
 		})
 	}));
@@ -510,20 +510,10 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
-			}, {
-				"name": "Reply",
-				"nestedPlugins": [{
-					"name": "FormAuth",
-					"submitPermissions": "forceLogin",
-					"identityManager": {
-						"login": identityManagerItem,
-						"signup": identityManagerItem
-					}
-				}]
 			}, {
 				"name": "Vote",
 				"launcher": authLauncher,
@@ -543,7 +533,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": true
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched,SystemFlagged user.state:Untouched,ModeratorApproved safeHTML:permissive children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:Untouched,SystemFlagged user.state:Untouched,ModeratorApproved safeHTML:permissive children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "Moderation"
@@ -578,7 +568,7 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 state:ModeratorApproved safeHTML:permissive sortOrder:likesDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
 				"name": "WithoutMore"
@@ -587,16 +577,6 @@ CrowdRules.methods._getMetadata = function() {
 				"readOnly": true
 			}, {
 				"name": "Moderation"
-			}, {
-				"name": "Reply",
-				"nestedPlugins": [{
-					"name": "FormAuth",
-					"submitPermissions": "forceLogin",
-					"identityManager": {
-						"login": identityManagerItem,
-						"signup": identityManagerItem
-					}
-				}]
 			}, $.extend({}, this.config.get("finalist"), {
 				"name": "FinalistButton"
 			}), {
@@ -648,19 +628,9 @@ CrowdRules.methods._getMetadata = function() {
 			"visible": false
 		},
 		"stream": {
-			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 markers:" + this.config.get("finalist.marker") + " state:ModeratorApproved,CommunityFlagged safeHTML:permissive sortOrder:flagsDescending children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:" + this.config.get("targetURL") + " itemsPerPage:10 markers:" + this.config.get("finalist.marker") + " state:ModeratorApproved,CommunityFlagged safeHTML:permissive sortOrder:flagsDescending children:0 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"item": {"reTag": false},
 			"plugins": [{
-				"name": "Reply",
-				"nestedPlugins": [{
-					"name": "FormAuth",
-					"submitPermissions": "forceLogin",
-					"identityManager": {
-						"login": identityManagerItem,
-						"signup": identityManagerItem
-					}
-				}]
-			}, {
 				"name": "Vote",
 				"engine": "flags",
 				"launcher": authLauncher,
