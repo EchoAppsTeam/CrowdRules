@@ -145,7 +145,7 @@ CrowdRules.templates.user =
 				'<div class="echo-clear"></div>' +
 				'<div class="{class:content}">' +
 					'<div class="{class:submit}"></div>' +
-					'<div class="{class:contestans}"></div>' +
+					'<div class="{class:contestants}"></div>' +
 				'</div>' +
 			'</div>' +
 		'</div>' +
@@ -235,7 +235,7 @@ CrowdRules.methods.addAuthPopupLauncher = function(element) {
 CrowdRules.renderers.permalinkContainer = function(element) {
 	var self = this;
 	var fragment = this._getFragment();
-	var metadata = this.get("metadata.tabs.contestans.stream", {
+	var metadata = this.get("metadata.tabs.contestants.stream", {
 		"plugins": []
 	});
 	metadata.plugins.push({
@@ -308,8 +308,8 @@ CrowdRules.renderers.title = function(element) {
 	return element.empty().append(this.get("metadata.title"));
 };
 
-CrowdRules.renderers.contestans = function(element) {
-	var self = this, metadata = this.get("metadata.tabs.contestans");
+CrowdRules.renderers.contestants = function(element) {
+	var self = this, metadata = this.get("metadata.tabs.contestants");
 	if (!metadata.visible) {
 		return element.hide();
 	}
@@ -448,9 +448,9 @@ CrowdRules.methods._getMetadata = function() {
 	var identityManagerItem = this.config.get("identityManager");
 	return [{
 // Stage 0
-"title": this.user.is("admin") ? "Contestans" : "Submit the business",
+"title": this.user.is("admin") ? "Contestants" : "Submit the business",
 "tabs": {
-	"contestans": {
+	"contestants": {
 		"visible": this.user.is("admin"),
 		"sorter": {
 			"visible": true
@@ -465,7 +465,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "contestans",
+			"id": "contestants",
 			"label": "Contestants"
 		}
 	},
@@ -502,9 +502,9 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 0
 },{
 // Stage 1
-"title": "Contestans",
+"title": "Contestants",
 "tabs": {
-	"contestans": {
+	"contestants": {
 		"visible": true,
 		"sorter": {
 			"visible": true
@@ -533,7 +533,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "contestans",
+			"id": "contestants",
 			"label": "Contestants"
 		}
 	},
@@ -570,9 +570,9 @@ CrowdRules.methods._getMetadata = function() {
 // End of Stage 1
 }, {
 // Stage 2
-"title": "Top 10 Contestans",
+"title": "Top 10 Contestants",
 "tabs": {
-	"contestans": {
+	"contestants": {
 		"visible": true,
 		"sorter": {
 			"visible": false
@@ -604,7 +604,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "contestans",
+			"id": "contestants",
 			"label": "Top 10 Contestants"
 		}
 	},
@@ -642,7 +642,7 @@ CrowdRules.methods._getMetadata = function() {
 // Stage 3
 "title": "Finalists",
 "tabs": {
-	"contestans": {
+	"contestants": {
 		"visible": true,
 		"sorter": {
 			"visible": false
@@ -672,7 +672,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "contestans",
+			"id": "contestants",
 			"label": "Finalists"
 		}
 	}
@@ -689,7 +689,7 @@ CrowdRules.methods._getMetadata = function() {
 // Stage 4
 "title": "Finalists",
 "tabs": {
-	"contestans": {
+	"contestants": {
 		"visible": true,
 		"sorter": {
 			"visible": false
@@ -712,7 +712,7 @@ CrowdRules.methods._getMetadata = function() {
 			}]
 		},
 		"tab": {
-			"id": "contestans",
+			"id": "contestants",
 			"label": "Finalists"
 		}
 	}
@@ -734,7 +734,7 @@ CrowdRules.css =
 	'.{class:auth} { float: right; }' +
 	'.{class:intro} { margin-left: 5px; margin-top: 10px; }' +
 	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
-	'.{class:contestans} { border-top: 1px solid #dddddd; }' +
+	'.{class:contestants} { border-top: 1px solid #dddddd; }' +
 	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
