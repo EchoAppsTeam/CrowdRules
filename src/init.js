@@ -12,7 +12,6 @@ Echo.Loader.initApplication({
 		"target": document.getElementById("echo-crowd-rules-app-content"),
 		"appkey": "echo.echo.streamserver.cnbc.prod",
 		"rpxAppName": "cnbc-echo",
-		"rpxAppId": "ifmlhnedamafhlbglhej",
 		"stageIndex": typeof stage !== "undefined" ? stage : 0
 	}
 });

@@ -38,8 +38,7 @@ CrowdRules.config = {
 		//permalink_id : targetURL
 	},
 	"sharing": {
-		"appId": "",
-		"xdReceiver": "http://cdn.echoenabled.com/apps/echo/crowd-rules/third-party/rpx_xdcomm.html",
+		"appName": "",
 		"activity": {
 			"prompt": "Share your vote:",
 			"content": "I just voted for '{data:businessName}' on '{data:domain}'",
@@ -58,6 +57,7 @@ CrowdRules.config.normalizer = {
 	},
 	"sharing": function(o) {
 		o.appId = o.appId || this.get("rpxAppId");
+		o.appName = o.appName || this.get("rpxAppName");
 		return o;
 	}
 };

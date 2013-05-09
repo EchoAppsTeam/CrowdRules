@@ -1,6 +1,16 @@
 (function(jQuery) {
 "use strict";
 
+// prepare Janrain object to support sharing functionality
+(function() {
+	if (typeof window.janrain !== 'object') window.janrain = {};
+	if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+	if (typeof window.janrain.settings.share !== 'object') window.janrain.settings.share = {};
+	if (typeof window.janrain.settings.packages !== 'object') janrain.settings.packages = [];
+	janrain.settings.packages.push('share');
+	janrain.ready = true;
+})();
+
 var $ = jQuery;
 
 var plugin = Echo.Plugin.manifest("Vote", "Echo.StreamServer.Controls.Stream.Item");
@@ -27,9 +37,11 @@ plugin.init = function() {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return !!window.RPXNOW; },
-	"url": ("https:" === document.location.protocol ?
-		"https://" : "http://static.") + "rpxnow.com/js/lib/rpx.js"
+	"loaded": function() { return !!window.janrain.engage; },
+	// TODO: replace appName with '{config:appName}'-style placeholder
+	"url": (document.location.protocol === 'https:')
+		? "https://rpxnow.com/js/lib/cnbc-echo/widget.js"
+		: "http://widget-cdn.rpxnow.com/js/lib/cnbc-echo/widget.js"
 }];
 
 plugin.templates.main =
@@ -148,10 +160,10 @@ plugin.methods._sendActivity = function(name, item, actor) {
 			"state": "Complete",
 			"response": response
 		});
-		if (plugin._isSharingEnabled(name)) {
-			plugin._shareContent(item);
-		}
 		plugin.requestDataRefresh();
+		if (plugin._isSharingEnabled(name)) {
+			plugin._shareVote(item);
+		}
 	}, function(response) {
 		plugin._publishEventComplete({
 			"name": name,
@@ -162,40 +174,23 @@ plugin.methods._sendActivity = function(name, item, actor) {
 };
 
 plugin.methods._isSharingEnabled = function(action) {
-	return ~$.inArray(action, this.get("engine.sharingActions"))
-		 && this.config.get("sharing.appId") && this.config.get("sharing.xdReceiver");
+	return janrain && janrain.ready && ~$.inArray(action, this.get("engine.sharingActions"));
 };
 
-plugin.methods._shareContent = function(item) {
-	var self = this;
-	RPXNOW.init({
-		"appId": self.config.get("sharing.appId"),
-		"xdReceiver": self.config.get("sharing.xdReceiver")
-	});
-	RPXNOW.loadAndRun(["Social"], function() {
-		var activity = new RPXNOW.Social.Activity(
-			self.config.get("sharing.activity.prompt"),
-			self._prepareSharingContent(item),
-			self.config.get("sharing.activity.url", window.location.href)
-		);
-		RPXNOW.Social.publishActivity(self._prepareSharingActivity(activity));
-	});
-};
-
-plugin.methods._prepareSharingContent = function(item) {
-	var content = $.parseJSON(item.get("data.object.content"));
-	return this.substitute({
+plugin.methods._shareVote = function(item) {
+	var activity = janrain.engage.share;
+	// TODO: handle $.paseJSON exceptions
+	var data = $.parseJSON(item.get("data.object.content"));
+	activity.setMessage(this.substitute({
 		"template": this.config.get("sharing.activity.content"),
 		"data": $.extend({
 			"domain": window.location.host
-		}, content)
-	});
-};
-
-plugin.methods._prepareSharingActivity = function(activity) {
+		}, data)
+	}));
+	activity.setUrl(this.config.get("sharing.activity.url", window.location.href));
 	activity.setDescription(this.config.get("sharing.activity.page.description"));
 	activity.setTitle(this.config.get("sharing.activity.page.title"));
-	return activity;
+	activity.show();
 };
 
 plugin.methods._publishEventComplete = function(args) {
