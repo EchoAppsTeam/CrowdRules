@@ -11,8 +11,7 @@ var youtubeRegExp = /youtube\.com|youtu\.be/i;
 
 plugin.config = {
 	"descriptionLimit": 300,
-	"videoMaxWidth": 402, // in px
-	"confirmationDisplayTimeout": 60000 // 1 min (in ms)
+	"videoMaxWidth": 402 // in px
 };
 
 plugin.labels = {
@@ -27,7 +26,7 @@ plugin.labels = {
 	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
 	"counterText": "Description limit is {limit} characters, {typed} typed so far.",
 	"loginMessage": "Please login to submit your entry",
-	"termsAndConditions": "I have read and accept the <a href=\"#\" target=\"_blank\">terms of service</a>"
+	"termsAndConditions": "I have read and accept the <a href=\"http://www.cnbc.com/id/100727244\" target=\"_blank\">Terms and Conditions</a>"
 };
 
 plugin.init = function() {
@@ -95,9 +94,10 @@ plugin.events = {
 		args.postData.content.push(
 			submit._getActivity("tag", submit._getASURL("marker"), "alpha:" + marker)
 		);
+		this.view.get("confirmation").hide();
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		var self = this, confirmation = this.view.get("confirmation");
+		var self = this;
 		// reset fields after successful submission...
 		$.map(["personalName", "personalEmail", "businessName", "videoURL", "description"], function(name) {
 			self.view.render({"name": name});
@@ -106,10 +106,7 @@ plugin.events = {
 		this.set("mediaContent", "");
 		this.view.get("videoPreview").hide();
 		this.view.render({"name": "charsCounter"});
-		confirmation.show();
-		setTimeout(function() {
-			confirmation.hide();
-		}, this.config.get("confirmationDisplayTimeout"));
+		this.view.get("confirmation").show();
 	}
 };
 
