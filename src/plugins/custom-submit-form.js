@@ -3,11 +3,11 @@
 
 var $ = jQuery;
 
-var youtubeRegExp = /youtube\.com|youtu\.be/;
-
 var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
+
+var youtubeRegExp = /youtube\.com|youtu\.be/i;
 
 plugin.config = {
 	"descriptionLimit": 300,
