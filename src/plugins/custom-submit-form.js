@@ -3,12 +3,14 @@
 
 var $ = jQuery;
 
+var youtubeRegExp = /youtube\.com|youtu\.be/;
+
 var plugin = Echo.Plugin.manifest("CustomSubmitForm", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
-	"descriptionLimit": 1000,
+	"descriptionLimit": 300,
 	"videoMaxWidth": 402, // in px
 	"confirmationDisplayTimeout": 60000 // 1 min (in ms)
 };
@@ -17,10 +19,11 @@ plugin.labels = {
 	"personalNameHint": "Name",
 	"personalEmailHint": "Email",
 	"businessNameHint": "Your Business Name",
-	"videoURLHint": "Your Video URL",
+	"videoURLHint": "Your YouTube Video URL",
 	"descriptionHint": "Description of the Business",
 	"processingMedia": "Processing media link. Please wait...",
 	"noMediaFound": "No media content was detected. The link will be displayed as is.",
+	"notValidYoutubeURL": "Not a valid YouTube video link. Please enter a valid YouTube URL.",
 	"submitConfirmation": "Thanks, your video has been submitted for consideration.",
 	"counterText": "Description limit is {limit} characters, {typed} typed so far.",
 	"loginMessage": "Please login to submit your entry",
@@ -44,7 +47,15 @@ plugin.init = function() {
 	submit.addPostValidator(function() {
 		var valid = true;
 		$.each(["personalName", "personalEmail", "businessName", "videoURL", "description"], function (i, field) {
-			valid = !self.component.highlightMandatory(self.view.get(field));
+			var element = self.view.get(field);
+			if (field === "videoURL") {
+				valid = self._isValidYoutubeURL(element.val());
+				if (!valid) {
+					element.parent().addClass(submit.cssPrefix + "mandatory");
+				}
+			} else {
+				valid = !submit.highlightMandatory(element);
+			}
 			return valid;
 		});
 		return valid;
@@ -172,17 +183,24 @@ plugin.renderers.charsCounter = function(element) {
 
 plugin.renderers.videoURL = function(element) {
 	var self = this;
+	var preview = this.view.get("videoPreview");
 	this._putHint(element, "videoURL");
-	element.bind({"blur": function() {
-		var link = $.trim(element.val());
-		var preview = self.view.get("videoPreview");
-		// do not resolve the same link twice
+	element.blur(function() {
+		var value = element.val();
+		var link = $.trim(value);
 		if (!link) {
 			preview.empty().hide();
 			return;
 		}
+		// do not resolve the same link twice
 		if (self.get("lastProcessedLink") === link) return;
+		if (!self._isValidYoutubeURL(value)) {
+			preview.html('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('notValidYoutubeURL') + '</span>');
+			element.parent().addClass(self.component.cssPrefix + "mandatory");
+			return;
+		}
 		self.set("lastProcessedLink", link);
+		element.parent().removeClass(self.component.cssPrefix + "mandatory");
 		preview.show().html('<span>' + self.labels.get("processingMedia") + '</span>');
 		$.get("http://api.embed.ly/1/oembed", {
 			"key": "20f6f47f7e584690ac9c29524a43fa55",
@@ -204,7 +222,7 @@ plugin.renderers.videoURL = function(element) {
 					preview.append('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('noMediaFound') + '</span>');
 			}
 		}, "jsonp");
-	}});
+	});
 	return element;
 };
 
@@ -255,10 +273,15 @@ plugin.methods._putHint = function(element, label) {
 	});
 };
 
+plugin.methods._isValidYoutubeURL = function(URL) {
+	var parts = Echo.Utils.parseURL(URL) || {};
+	return youtubeRegExp.test(parts.domain) && parts.path !== "/";
+};
+
 plugin.css =
 	'.echo-sdk-ui .echo-streamserver-controls-submit-mandatory { border: 1px solid red; }' +
 	'.echo-sdk-ui input[type="text"].{plugin.class:input}, .echo-sdk-ui textarea.{plugin.class:input} { outline: 0 !important; box-shadow: none !important; padding: 0px; margin: 0px; border: 0px; width: 100%; }' +
-	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #DDDDDD; }' +
+	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #bbb; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation}.alert { font-weight: bold; margin: 10px 0px; }' +
 	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; margin-top: 15px; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
@@ -267,7 +290,7 @@ plugin.css =
 	'.{plugin.class:charsCounter} { font-size: 12px; color: #555555; }' +
 	'.{plugin.class:loginMessage} { display: none; }' +
 	'.echo-sdk-ui textarea.{plugin.class:description} { resize: none; }' +
-	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #DDDDDD; }' +
+	'.{plugin.class:inputContainer} { margin: 5px 0px; padding: 3px 5px; border: 1px solid #bbb; }' +
 	'.{plugin.class:termsAndConditionsContainer} { margin-top: 5px; }' +
 	'.{plugin.class:termsAndConditionsContainer} span { font-size: 12px; }' +
 	'.echo-sdk-ui input[type="checkbox"].{plugin.class:termsAndConditions} { margin: -2px 3px 0px 0px; }' +

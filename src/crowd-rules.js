@@ -26,7 +26,7 @@ CrowdRules.config = {
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,
-		"height": 200,
+		"height": 300,
 		"title": "Sign in...",
 		"url": ""
 	},
@@ -448,7 +448,7 @@ CrowdRules.methods._getMetadata = function() {
 	var identityManagerItem = this.config.get("identityManager");
 	return [{
 // Stage 0
-"title": this.user.is("admin") ? "Contestants" : "Submit the business",
+"title": this.user.is("admin") ? "Contestants" : "Enter To Win",
 "tabs": {
 	"contestants": {
 		"visible": this.user.is("admin"),
