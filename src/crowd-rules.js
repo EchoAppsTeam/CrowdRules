@@ -43,8 +43,8 @@ CrowdRules.config = {
 			"prompt": "Share your vote:",
 			"content": "I just voted for '{data:businessName}' on '{data:domain}'",
 			"page": {
-				"title": "",
-				"description": ""
+				"title": "Crowd Rules",
+				"description": "Each week, \"Crowd Rules\" features three small businesses that compete in front of an audience of 100 that votes to decide who wins a much-needed $50,000 prize."
 			}
 		}
 	}
