@@ -280,7 +280,7 @@ plugin.css =
 	'.echo-sdk-ui input[type="text"].{plugin.class:input}, .echo-sdk-ui textarea.{plugin.class:input} { outline: 0 !important; box-shadow: none !important; padding: 0px; margin: 0px; border: 0px; width: 100%; }' +
 	'.echo-sdk-ui .echo-streamserver-controls-submit-plugin-CustomSubmitForm-input.echo-secondaryColor { color: #bbb; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation}.alert { font-weight: bold; margin: 10px 0px; }' +
-	'.echo-sdk-ui .{class:postButton} { letter-spacing: normal; margin-top: 15px; }' +
+	'.echo-sdk-ui .{class:postButton}.btn { letter-spacing: normal; margin-top: 15px; text-shadow: none; }' +
 	'.echo-sdk-ui .{plugin.class:confirmation} { display: none; }' +
 	'.echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound { color: red; }' +
 	'.{plugin.class:footer} { float: left; margin: 0px 0px 0px 2px; }' +
