@@ -466,7 +466,7 @@ CrowdRules.methods._getMetadata = function() {
 	var identityManagerItem = this.config.get("identityManager");
 	return [{
 // Stage 0
-"title": this.user.is("admin") ? "Contestants" : "Enter To Win",
+"title": this.user.is("admin") ? "Contestants" : "Submit your business",
 "tabs": {
 	"contestants": {
 		"visible": this.user.is("admin"),
