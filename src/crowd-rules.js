@@ -539,8 +539,8 @@ CrowdRules.methods._getMetadata = function() {
 			'</div>' +
 		'</div>',
 	"css":
-		'.echo-crowd-rules-intro1-section-textbox { width: 556px; font-size: 20px; line-height: 32px; font-family: arial, sans-serif; color: #6b6b7b; padding: 50px 0 50px 45px; }' +
-		'.echo-crowd-rules-intro1-section-textbox-content { padding-top: 1em; }' +
+		'.echo-crowd-rules-intro1-section-textbox { width: 556px; font-size: 20px; line-height: 32px; font-family: arial, sans-serif; padding: 50px 0 50px 45px; }' +
+		'.echo-crowd-rules-intro1-section-textbox-content { padding-top: 1em; color: #6b6b7b; }' +
 		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 auto; padding-left: 0; width: 600px; line-height: 36px; }' +
 		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox-content { padding-top: 0; }' +
 		'.echo-crowd-rules-intro1-section-title { font-size: 28px; font-weight: bold; color: #424257; }' +
