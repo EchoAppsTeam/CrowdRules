@@ -133,16 +133,15 @@ CrowdRules.methods.template = function() {
 };
 
 CrowdRules.templates.user =
+	'<div class="{class:intro}"></div>' +
 	'<div class="{class:container}">' +
 		'<div class="{class:main}">' +
 			'<div class="{class:mainWrapper}">' +
 				'<div class="{class:header}">' +
 					'<div class="{class:title}"></div>' +
+					'<div class="{class:auth}"></div>' +
 					'<div class="echo-clear"></div>' +
-					'<div class="{class:intro}"></div>' +
 				'</div>' +
-				'<div class="{class:auth}"></div>' +
-				'<div class="echo-clear"></div>' +
 				'<div class="{class:content}">' +
 					'<div class="{class:submit}"></div>' +
 					'<div class="{class:contestants}"></div>' +
@@ -150,7 +149,11 @@ CrowdRules.templates.user =
 			'</div>' +
 		'</div>' +
 		'<div class="{class:right}">' +
-			'<div class="{class:rightWrapper}"></div>' +
+			'<div class="{class:rightWrapper}">' +
+				'<div class="{class:banner}">' +
+					'<img width="289" height="85" src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-miniBanner.png">' +
+				'</div>' +
+			'</div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -161,11 +164,11 @@ CrowdRules.templates.admin =
 			'<div class="{class:mainWrapper}">' +
 				'<div class="{class:header}">' +
 					'<div class="{class:title}"></div>' +
+					'<div class="{class:auth}"></div>' +
 					'<div class="echo-clear"></div>' +
-					'<div class="{class:intro}"></div>' +
 				'</div>' +
 				'<div class="{class:content}">' +
-					'<div class="{class:auth}" style="float: right;"></div>' +
+					'<div class="echo-clear"></div>' +
 					'<div class="{class:tabs}"></div>' +
 				'</div>' +
 			'</div>' +
@@ -190,6 +193,9 @@ CrowdRules.templates.permalink =
 		'</div>' +
 		'<div class="{class:right}">' +
 			'<div class="{class:rightWrapper}">' +
+				'<div class="{class:banner}">' +
+					'<img width="289" height="85" src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-miniBanner.png">' +
+				'</div>' +
 				'<div class="{class:finalistActivityTitle}"></div>' +
 				'<div class="{class:finalistActivityStream}"></div>' +
 			'</div>' +
@@ -198,8 +204,17 @@ CrowdRules.templates.permalink =
 	'</div>';
 
 CrowdRules.renderers.container = function(element) {
-	if (this.config.get("stageIndex") > 2 && /video\/[\d-]+/.test(window.location.hash)) {
+	if (!this.user.is("admin")
+		|| (this.config.get("stageIndex") > 2 && /video\/[\d-]+/.test(window.location.hash))
+	) {
 		element.addClass(this.cssPrefix + "withSidebar");
+	}
+	return element;
+};
+
+CrowdRules.renderers.banner = function(element) {
+	if (this.user.is("admin")) {
+		element.hide();
 	}
 	return element;
 };
@@ -288,7 +303,7 @@ CrowdRules.renderers.submit = function(element) {
 		"appkey": this.config.get("appkey"),
 		"targetURL": this.config.get("targetURL"),
 		"labels": {
-			"post": "Submit your Entry"
+			"post": "Submit"
 		},
 		"plugins": [{
 			"name": "CustomSubmitForm"
@@ -300,7 +315,10 @@ CrowdRules.renderers.submit = function(element) {
 CrowdRules.renderers.intro = function(element) {
 	var metadata = this.get("metadata.intro");
 	return metadata.visible
-		? element.empty().append(metadata.content)
+		? (
+			Echo.Utils.addCSS(metadata.css || "", "intro-stage-" + this.config.get("stageIndex")),
+			element.empty().append(metadata.content)
+		)
 		: element.hide();
 };
 
@@ -494,11 +512,44 @@ CrowdRules.methods._getMetadata = function() {
 },
 "intro": {
 	"visible": true,
-	"content": "Stage 1 'Submission' description"
-},
-"css": !this.user.is("admin")
-		? ".{class:mainWrapper} { margin-left: 175px; width: 570px; }"
-		: ".{class:mainWrapper} { margin-left: 0px; width: auto; }"
+	"content":
+		'<div class="echo-crowd-rules-intro1-sectionA">' +
+			'<div class="echo-crowd-rules-intro1-section-textbox">' +
+				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd!</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
+				'<iframe style="padding-top: 26px;" width="560" height="315" src="http://www.youtube.com/embed/PydbBoEWwEE" frameborder="0" allowfullscreen></iframe>' +
+			'</div>' +
+		'</div>' +
+		'<div class="echo-crowd-rules-intro1-sectionB">' +
+			'<div class="echo-crowd-rules-intro1-section-textbox">' +
+				'<div class="echo-crowd-rules-intro1-section-title">Step 1</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Create a <strong>1-2 minute video</strong> about your small business. Tell us about your company, what you would do with $50,000 and why you deserve to win the cash. Then upload to YouTube and copy the URL.</div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="echo-crowd-rules-intro1-sectionC">' +
+			'<div class="echo-crowd-rules-intro1-section-textbox">' +
+				'<div class="echo-crowd-rules-intro1-section-title">Step 2</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Click “<strong>Sign In</strong>” below. Once done, you will be able to enter your small business by filling out the requested information and pasting the URL to your video. When everything is done, simply click “Submit.”</div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="echo-crowd-rules-intro1-sectionD">' +
+			'<div class="echo-crowd-rules-intro1-section-textbox">' +
+				'<div class="echo-crowd-rules-intro1-section-title">Step 3</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Check back on <strong>May 28th</strong> to see if you’ve made the list of businesses eligible to receive funding and then start soliciting support. Alert your family, your friends, your customers, your neighbors – anybody and everybody – because only the 10 teams with the most votes will have the ability to make it to the final round!</div>' +
+			'</div>' +
+		'</div>',
+	"css":
+		'.echo-crowd-rules-intro1-section-textbox { width: 556px; font-size: 20px; line-height: 32px; font-family: arial, sans-serif; color: #6b6b7b; padding: 50px 0 50px 45px; }' +
+		'.echo-crowd-rules-intro1-section-textbox-content { padding-top: 1em; }' +
+		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 auto; padding-left: 0; width: 600px; line-height: 36px; }' +
+		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox-content { padding-top: 0; }' +
+		'.echo-crowd-rules-intro1-section-title { font-size: 28px; font-weight: bold; color: #424257; }' +
+		'.echo-crowd-rules-intro1-sectionA, .echo-crowd-rules-intro1-sectionB, .echo-crowd-rules-intro1-sectionC, .echo-crowd-rules-intro1-sectionD { background-repeat:no-repeat; background-position:bottom; }' +
+		'.echo-crowd-rules-intro1-sectionA { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionA-background.png"); }' +
+		'.echo-crowd-rules-intro1-sectionB { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionB-background.jpg"); }' +
+		'.echo-crowd-rules-intro1-sectionC { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionC-background.png"); }' +
+		'.echo-crowd-rules-intro1-sectionD { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-background.jpg"); }'
+	}
 // End of Stage 0
 },{
 // Stage 1
@@ -554,7 +605,7 @@ CrowdRules.methods._getMetadata = function() {
 	"visible": false
 },
 "intro": {
-	"visible": true,
+	"visible": false,
 	"content": "Stage 2 'Voting' description"
 }
 // End of Stage 1
@@ -614,7 +665,7 @@ CrowdRules.methods._getMetadata = function() {
 	"visible": false
 },
 "intro": {
-	"visible": true,
+	"visible": false,
 	"content": "Stage 3 'Finalists' description"
 }
 // End of Stage 2
@@ -651,7 +702,7 @@ CrowdRules.methods._getMetadata = function() {
 	"visible": false
 },
 "intro": {
-	"visible": true,
+	"visible": false,
 	"content": "Stage 4 'Final voting' description"
 }
 // End of Stage 3
@@ -691,7 +742,7 @@ CrowdRules.methods._getMetadata = function() {
 	"visible": false
 },
 "intro": {
-	"visible": true,
+	"visible": false,
 	"content": "Stage 5 'Winner' description"
 }
 // End of Stage 4
@@ -699,17 +750,18 @@ CrowdRules.methods._getMetadata = function() {
 };
 
 CrowdRules.css =
-	'.{class:container} { font-size: 14px; line-height: 20px; padding: 20px; margin-bottom: 50px; }' +
+	'.{class:container} { font-size: 14px; line-height: 20px; padding: 20px; margin-bottom: 50px; margin-top: 30px; }' +
 	'.{class:submit} { margin-bottom: 20px; }' +
+	'.{class:header} { margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
-	'.{class:intro} { margin-left: 5px; margin-top: 10px; }' +
-	'.{class:title} { color: #555555; font: 26px Arial; line-height: 18px; font-weight: bold; padding-left: 5px;  float: left; }' +
+	'.{class:title} { color: #424257; font: 28px Arial; line-height: 32px; font-weight: bold; float: left; }' +
 	'.{class:contestants} { border-top: 1px solid #dddddd; }' +
 	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
 	'.{class:right} { display: none; }' +
-	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; }' +
+	'.{class:banner} { padding: 50px 0 0 15px; }' +
+	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; margin-left: 25px; }' +
 	'.{class:withSidebar} .{class:right} { display: block; margin-left: -350px; }' +
 	'.{class:rightWrapper} { width: 325px; margin-left: 25px; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; text-align: right; }' +
@@ -735,6 +787,8 @@ CrowdRules.css =
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar { width: 36px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-plugin-VideoContent-description { padding-right: 75px; }' +
+	// override CNBC page styles
+	'#franchiseHeader, #page_header { height: 100px!important; }' +
 	// bootstrap components styles
 	'.{class:container} .btn, .{class:container} .btn:hover { background-image: none!important; height: auto!important; }' +
 	'.{class:tabs} > ul.nav { margin-bottom: 0px; }' +

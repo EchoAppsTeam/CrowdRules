@@ -295,7 +295,10 @@ plugin.css =
 	'.echo-sdk-ui .echo-apps-crowdrules-container .{plugin.class:mandatory} a { color: red; }' +
 	'.{plugin.class:disabled} { padding: 0; }' +
 	'.{plugin.class:disabled} input[type="text"].{plugin.class:input}, .{plugin.class:disabled} textarea.{plugin.class:input} { border-radius: 0; }' +
-	'.{plugin.class:disabled} input[type="text"].{plugin.class:input} { height: 26px; }';
+	'.{plugin.class:disabled} input[type="text"].{plugin.class:input} { height: 26px; }' +
+	// override bootstrap css for button
+	'.echo-sdk-ui .{class:controls} .btn, .echo-sdk-ui .{class:controls} .btn:hover, .echo-sdk-ui .{class:controls} .btn[disabled], .echo-sdk-ui .{class:controls} .btn.disabled { background-color: #5c77ca; }' +
+	'.echo-sdk-ui .{class:controls} .btn div { color: #fff; }';
 
 Echo.Plugin.create(plugin);
 

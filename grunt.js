@@ -20,6 +20,11 @@ module.exports = function(grunt) {
 			],
 			"html": [
 				"<%= dirs.src %>/**/*.html"
+			],
+			"images": [
+				"<%= dirs.src %>/**/*.png",
+				"<%= dirs.src %>/**/*.jpg",
+				"<%= dirs.src %>/**/*.gif"
 			]
 		},
 		"demo": ["demo/**"]
@@ -132,7 +137,7 @@ module.exports = function(grunt) {
 				tasks = "copy:js copy:html patch:init patch:urls min concat clean:nonpacks copy:build";
 				break;
 			case "final":
-				tasks = "copy:demo patch:demo copy:build";
+				tasks = "copy:images copy:demo patch:demo copy:build";
 				break;
 		}
 		grunt.task.run(tasks + " clean:build");
@@ -167,7 +172,9 @@ module.exports = function(grunt) {
 			if (env !== "production") {
 				src = src.replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
-					config.domain + (env === "dev" ? "/dev" : "")
+					function(str, p) {
+						return config.domain + (env === "dev" && src.slice(p + str.length, p + str.length + 7) !== "/images" ? "/dev" : "")
+					}
 				);
 			}
 			return src;
@@ -181,6 +188,14 @@ module.exports = function(grunt) {
 		var stage = shared.config("build.stage");
 		var spec = {};
 		if (stage === "final") {
+			spec["images"] = {
+				"files": {
+					 "<%= dirs.build %>": grunt.config("sources." + target + ".images")
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
 			spec["demo"] = {
 				"files": {
 					"<%= dirs.build %>": grunt.config("sources.demo")
