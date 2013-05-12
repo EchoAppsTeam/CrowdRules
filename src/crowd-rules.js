@@ -73,16 +73,20 @@ CrowdRules.init = function() {
 	this.render();
 	this.ready();
 	if (!this.user.is("admin")) {
-		this._removeUserValidationFrom(this);
+		var handler = this._removeUserValidationFrom(this);
 		this._removeUserValidationFrom(Echo.Loader.canvases[0]);
 		this.events.subscribe({
 			"topic": "Echo.UserSession.onInvalidate",
 			"context": "global",
 			"handler": function(topic, data) {
-				var stream = this.get("stream", {});
-				$.map(stream.threads || [], function(root) {
-					root.render();
-				});
+				if (!this.user.is("admin")) {
+					var stream = this.get("stream", {});
+					$.map(stream.threads || [], function(root) {
+						root.render();
+					});
+				} else {
+					handler.apply(this, arguments);
+				}
 			}
 		});
 	}
@@ -406,7 +410,7 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 };
 
 CrowdRules.methods._removeUserValidationFrom = function() {
-	var self = this;
+	var self = this, handler;
 	var topic = "Echo.UserSession.onInvalidate";
 	$.map(Array.prototype.slice.call(arguments), function(inst) {
 		$.each(inst.subscriptionIDs, function(id) {
@@ -417,10 +421,12 @@ CrowdRules.methods._removeUserValidationFrom = function() {
 				Echo.Events.unsubscribe({
 					"handlerId": obj.id
 				});
+				handler = obj.handler;
 				return false;
 			}
 		});
 	});
+	return handler;
 };
 
 CrowdRules.methods._getFragment = function(fragment) {
