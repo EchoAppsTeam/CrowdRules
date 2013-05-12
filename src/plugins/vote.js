@@ -30,6 +30,16 @@ plugin.labels = {
 	"unvote": "Unvote"
 };
 
+plugin.events = {
+	"Echo.UserSession.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			(this.deferredActivity || $.noop)();
+			delete this.deferredActivity;
+		}
+	}
+};
+
 plugin.init = function() {
 	if (!this.component.isRoot()) return false;
 	this.set("engine", this._getEngineData());
@@ -59,7 +69,12 @@ plugin.renderers.vote = function(element) {
 	element.off("click").off("hover");
 	if (!item.user.is("logged") || this.config.get("readOnly")) {
 		this.config.get("launcher")(element);
-		return element.css({"opacity": 0.3});
+		return element.off("click.deferred").on("click.deferred", function() {
+			self.deferredActivity = function() {
+				if (self._hasVoted()) return;
+				self._sendActivity(self.get("engine.action"), item);
+			};
+		}).css({"opacity": 0.3});
 	}
 	if (voted) {
 		element.removeClass("btn-primary")
@@ -141,14 +156,7 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 
 plugin.methods._sendActivity = function(name, item, actor) {
 	var plugin = this;
-	var activity = {
-		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
-		"targets": [{"id": item.get("data.object.id")}]
-	};
-	if (actor && actor.id) {
-		activity.author = actor.id;
-	}
-
+	var activity = this._prepareActivity.apply(this, arguments);
 	this._sendRequest({
 		"content": activity,
 		"appkey": item.config.get("appkey"),
@@ -171,6 +179,17 @@ plugin.methods._sendActivity = function(name, item, actor) {
 			"response": response
 		});
 	});
+};
+
+plugin.methods._prepareActivity = function(name, item, actor) {
+	var activity = {
+		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
+		"targets": [{"id": item.get("data.object.id")}]
+	};
+	if (actor && actor.id) {
+		activity.author = actor.id;
+	}
+	return activity;
 };
 
 plugin.methods._isSharingEnabled = function(action) {

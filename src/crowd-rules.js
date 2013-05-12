@@ -70,15 +70,22 @@ CrowdRules.labels = {
 
 CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
-	var stageCSS = this.get("metadata.css");
-	if (stageCSS) {
-		Echo.Utils.addCSS(this.substitute({
-			"template": stageCSS,
-			"data": {"class": this.cssPrefix}
-		}));
-	}
 	this.render();
 	this.ready();
+	if (!this.user.is("admin")) {
+		this._removeUserValidationFrom(this);
+		this._removeUserValidationFrom(Echo.Loader.canvases[0]);
+		this.events.subscribe({
+			"topic": "Echo.UserSession.onInvalidate",
+			"context": "global",
+			"handler": function(topic, data) {
+				var stream = this.get("stream", {});
+				$.map(stream.threads || [], function(root) {
+					root.render();
+				});
+			}
+		});
+	}
 	$(window).off("hashchange")
 		.on("hashchange", $.proxy(this.refresh, this));
 };
@@ -354,7 +361,7 @@ CrowdRules.renderers.tabs = function(element) {
 CrowdRules.renderers.finalistActivityTitle = function(element) {
 	var self = this;
 	var stream = this.get("stream"), businessName;
-	if (!stream || this.config.get("stageIndex") < 2) return element.empty();
+	if (!stream || this.config.get("stageIndex") < 3) return element.empty();
 	$.map(["Echo.StreamServer.Controls.Stream.onRender", "Echo.StreamServer.Controls.Stream.onRefresh"], function(topic) {
 		var handlerId = Echo.Events.subscribe({
 			"topic": topic,
@@ -375,7 +382,7 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 	if (!this.permalinkId) {
 		this.permalinkId = this._getFragment().replace(/[^\d-]+/g, "");
 	}
-	if (!this.permalinkId || this.config.get("stageIndex") < 2) return element.empty();
+	if (!this.permalinkId || this.config.get("stageIndex") < 3) return element.empty();
 	this.finalistStream = new Echo.StreamServer.Controls.Stream({
 		"target": element.empty(),
 		"appkey": this.config.get("appkey"),
@@ -396,6 +403,24 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 		})
 	});
 	return element;
+};
+
+CrowdRules.methods._removeUserValidationFrom = function() {
+	var self = this;
+	var topic = "Echo.UserSession.onInvalidate";
+	$.map(Array.prototype.slice.call(arguments), function(inst) {
+		$.each(inst.subscriptionIDs, function(id) {
+			var obj = $.grep(Echo.Events._subscriptions[topic].global.handlers, function(o) {
+				return o.id === id;
+			})[0];
+			if (obj && obj.id) {
+				Echo.Events.unsubscribe({
+					"handlerId": obj.id
+				});
+				return false;
+			}
+		});
+	});
 };
 
 CrowdRules.methods._getFragment = function(fragment) {
@@ -434,6 +459,7 @@ CrowdRules.methods._toggleStream = function(container, config) {
 		stream.refresh();
 		this.set("query", stream.config.get("query"));
 	}
+	this._removeUserValidationFrom(this.stream);
 };
 
 CrowdRules.methods._toggleSorter = function(container, config) {
@@ -759,12 +785,11 @@ CrowdRules.css =
 	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
-	'.{class:right} { display: none; }' +
-	'.{class:banner} { padding: 50px 0 0 15px; }' +
 	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; margin-left: 25px; }' +
 	'.{class:withSidebar} .{class:right} { display: block; margin-left: -350px; }' +
-	'.{class:rightWrapper} { width: 325px; margin-left: 25px; }' +
-	'.{class:finalistActivityTitle} { font-size: 14px; text-align: right; }' +
+	'.{class:banner} { margin-bottom: 30px; }' +
+	'.{class:rightWrapper} { width: 290px; margin-left: 40px; padding: 50px 20px 0 0; }' +
+	'.{class:finalistActivityTitle} { font-size: 14px; margin-bottom: 10px; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +
 	'.{class:itemWinner} { background-color: #ffff99; }' +
 	// auth control styles
@@ -783,10 +808,13 @@ CrowdRules.css =
 	'.{class:main} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 78px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -78px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-container-child { margin-right: 78px; }' +
+	'.{class:right} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-subwrapper { margin-left: 46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar-wrapper { margin-right: -46px; }' +
 	'.{class:right} .echo-streamserver-controls-stream-item-avatar { width: 36px; }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-plugin-VideoContent-description { padding-right: 75px; }' +
+	'.{class:container} a.echo-streamserver-controls-stream-item-button, .{class:container} a.echo-streamserver-controls-stream-item-button span { color: #c6c6c6; }' +
+	'.{class:container} a.echo-streamserver-controls-stream-item-button:hover, .{class:container} a.echo-streamserver-controls-stream-item-button.echo-linkColor, .{class:container} a.echo-streamserver-controls-stream-item-button span:hover, .{class:container} a.echo-streamserver-controls-stream-item-button span.echo-linkColor { color: #476cb8; }' +
 	// override CNBC page styles
 	'#franchiseHeader, #page_header { height: 100px!important; }' +
 	// bootstrap components styles
@@ -795,7 +823,7 @@ CrowdRules.css =
 	'.{class:viewContestants} div { margin-left: 25px; }' +
 	'.{class:permalinkContainer} { margin-top: 20px; }' +
 	'.echo-sdk-ui .echo-control-message { padding: 45px; }' +
-	'.echo-sdk-ui .{class:container} a { color: #476CB8; }' +
+	'.echo-sdk-ui .{class:container} a, .echo-sdk-ui .{class:container} a * { color: #476CB8; }' +
 	'.echo-sdk-ui h3 { text-transform: none; }';
 
 Echo.App.create(CrowdRules);
