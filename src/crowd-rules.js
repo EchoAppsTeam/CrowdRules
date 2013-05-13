@@ -561,7 +561,7 @@ CrowdRules.methods._getMetadata = function() {
 		'<div class="echo-crowd-rules-intro1-sectionC">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
 				'<div class="echo-crowd-rules-intro1-section-title">Step 2</div>' +
-				'<div class="echo-crowd-rules-intro1-section-textbox-content">Click “<strong>Sign In</strong>” below. Once done, you will be able to enter your small business by filling out the requested information and pasting the URL to your video. When everything is done, simply click “Submit.”</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Click “<strong>Login</strong>” below. Once done, you will be able to enter your small business by filling out the requested information and pasting the URL to your video. When everything is done, simply click “<strong>Submit</strong>”.</div>' +
 			'</div>' +
 		'</div>' +
 		'<div class="echo-crowd-rules-intro1-sectionD">' +
