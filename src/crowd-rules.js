@@ -22,7 +22,7 @@ CrowdRules.config = {
 			"emptyStream": "No videos at this time..."
 		}
 	},
-	"targetURL": "http://cnbc.com/crowdrules",
+	"targetURL": "http://test.cnbc.com/crowdrules",
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,
@@ -145,7 +145,7 @@ CrowdRules.methods.template = function() {
 
 CrowdRules.templates.user =
 	'<div class="{class:intro}"></div>' +
-	'<div class="{class:container}">' +
+	'<div class="{class:container} {class:stage}{config:stageIndex}">' +
 		'<div class="{class:main}">' +
 			'<div class="{class:mainWrapper}">' +
 				'<div class="{class:header}">' +
@@ -160,11 +160,7 @@ CrowdRules.templates.user =
 			'</div>' +
 		'</div>' +
 		'<div class="{class:right}">' +
-			'<div class="{class:rightWrapper}">' +
-				'<div class="{class:banner}">' +
-					'<img width="289" height="85" src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-miniBanner.png">' +
-				'</div>' +
-			'</div>' +
+			'<div class="{class:rightWrapper}"></div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -204,9 +200,6 @@ CrowdRules.templates.permalink =
 		'</div>' +
 		'<div class="{class:right}">' +
 			'<div class="{class:rightWrapper}">' +
-				'<div class="{class:banner}">' +
-					'<img width="289" height="85" src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-miniBanner.png">' +
-				'</div>' +
 				'<div class="{class:finalistActivityTitle}"></div>' +
 				'<div class="{class:finalistActivityStream}"></div>' +
 			'</div>' +
@@ -215,17 +208,9 @@ CrowdRules.templates.permalink =
 	'</div>';
 
 CrowdRules.renderers.container = function(element) {
-	if (!this.user.is("admin")
-		|| (this.config.get("stageIndex") > 2 && /video\/[\d-]+/.test(window.location.hash))
-	) {
+	if ((this.config.get("stageIndex") > 2
+		&& /video\/[\d-]+/.test(window.location.hash))) {
 		element.addClass(this.cssPrefix + "withSidebar");
-	}
-	return element;
-};
-
-CrowdRules.renderers.banner = function(element) {
-	if (this.user.is("admin")) {
-		element.hide();
 	}
 	return element;
 };
@@ -549,7 +534,7 @@ CrowdRules.methods._getMetadata = function() {
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
 				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd!</div>' +
 				'<div class="echo-crowd-rules-intro1-section-textbox-content">From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
-				'<iframe style="padding-top: 26px;" width="560" height="315" src="http://www.youtube.com/embed/PydbBoEWwEE" frameborder="0" allowfullscreen></iframe>' +
+				'<iframe style="padding-top: 26px;" width="880" height="495" src="http://www.youtube.com/embed/h0gpE4WHpqI" frameborder="0" allowfullscreen></iframe>' +
 			'</div>' +
 		'</div>' +
 		'<div class="echo-crowd-rules-intro1-sectionB">' +
@@ -573,7 +558,7 @@ CrowdRules.methods._getMetadata = function() {
 	"css":
 		'.echo-crowd-rules-intro1-section-textbox { width: 556px; font-size: 20px; line-height: 32px; font-family: arial, sans-serif; padding: 50px 0 50px 45px; }' +
 		'.echo-crowd-rules-intro1-section-textbox-content { padding-top: 1em; color: #6b6b7b; }' +
-		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 auto; padding-left: 0; width: 600px; line-height: 36px; }' +
+		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 40px 50px; padding-left: 0; width: auto; line-height: 36px; }' +
 		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox-content { padding-top: 0; }' +
 		'.echo-crowd-rules-intro1-section-title { font-size: 28px; font-weight: bold; color: #424257; }' +
 		'.echo-crowd-rules-intro1-sectionA, .echo-crowd-rules-intro1-sectionB, .echo-crowd-rules-intro1-sectionC, .echo-crowd-rules-intro1-sectionD { background-repeat:no-repeat; background-position:bottom; }' +
@@ -791,9 +776,9 @@ CrowdRules.css =
 	'.{class:content} { margin-top: 10px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:main} { width: 100%; }' +
+	'.{class:stage0} .{class:mainWrapper} { margin: 0 auto;  width: 600px; }' +
 	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; margin-left: 25px; }' +
 	'.{class:withSidebar} .{class:right} { display: block; margin-left: -350px; }' +
-	'.{class:banner} { margin-bottom: 30px; }' +
 	'.{class:rightWrapper} { width: 290px; margin-left: 40px; padding: 50px 20px 0 0; }' +
 	'.{class:finalistActivityTitle} { font-size: 14px; margin-bottom: 10px; }' +
 	'.{class:finalistActivityTitle} span { font-size: 14px; font-weight: bold; }' +

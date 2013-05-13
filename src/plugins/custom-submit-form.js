@@ -192,7 +192,7 @@ plugin.renderers.videoURL = function(element) {
 		// do not resolve the same link twice
 		if (self.get("lastProcessedLink") === link) return;
 		if (!self._isValidYoutubeURL(value)) {
-			preview.html('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('notValidYoutubeURL') + '</span>');
+			preview.show().html('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('notValidYoutubeURL') + '</span>');
 			element.parent().addClass(self.component.cssPrefix + "mandatory");
 			return;
 		}
