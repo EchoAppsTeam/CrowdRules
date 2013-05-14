@@ -163,6 +163,9 @@ CrowdRules.templates.user =
 			'<div class="{class:rightWrapper}"></div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
+	'</div>' +
+	'<div class="{class:footer}">' +
+		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
 CrowdRules.templates.admin =
@@ -184,6 +187,9 @@ CrowdRules.templates.admin =
 			'<div class="{class:rightWrapper}"></div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
+	'</div>' +
+	'<div class="{class:footer}">' +
+		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
 CrowdRules.templates.permalink =
@@ -205,6 +211,9 @@ CrowdRules.templates.permalink =
 			'</div>' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
+	'</div>' +
+	'<div class="{class:footer}">' +
+		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
 CrowdRules.renderers.container = function(element) {
@@ -533,7 +542,7 @@ CrowdRules.methods._getMetadata = function() {
 		'<div class="echo-crowd-rules-intro1-sectionA">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
 				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd!</div>' +
-				'<div class="echo-crowd-rules-intro1-section-textbox-content">From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
+				'<div style="padding-top: 1em;" class="echo-crowd-rules-intro1-section-title">From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
 				'<iframe style="padding-top: 26px;" width="880" height="495" src="http://www.youtube.com/embed/h0gpE4WHpqI" frameborder="0" allowfullscreen></iframe>' +
 			'</div>' +
 		'</div>' +
@@ -558,7 +567,7 @@ CrowdRules.methods._getMetadata = function() {
 	"css":
 		'.echo-crowd-rules-intro1-section-textbox { width: 556px; font-size: 20px; line-height: 32px; font-family: arial, sans-serif; padding: 50px 0 50px 45px; }' +
 		'.echo-crowd-rules-intro1-section-textbox-content { padding-top: 1em; color: #6b6b7b; }' +
-		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 40px 50px; padding-left: 0; width: auto; line-height: 36px; }' +
+		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox { margin: 0 40px 0 45px; padding-left: 0; width: auto; line-height: 36px; }' +
 		'.echo-crowd-rules-intro1-sectionA .echo-crowd-rules-intro1-section-textbox-content { padding-top: 0; }' +
 		'.echo-crowd-rules-intro1-section-title { font-size: 28px; font-weight: bold; color: #424257; }' +
 		'.echo-crowd-rules-intro1-sectionA, .echo-crowd-rules-intro1-sectionB, .echo-crowd-rules-intro1-sectionC, .echo-crowd-rules-intro1-sectionD { background-repeat:no-repeat; background-position:bottom; }' +
@@ -767,14 +776,15 @@ CrowdRules.methods._getMetadata = function() {
 };
 
 CrowdRules.css =
-	'.{class:container} { font-size: 14px; line-height: 20px; padding: 20px; margin-bottom: 50px; margin-top: 30px; }' +
-	'.{class:submit} { margin-bottom: 20px; }' +
-	'.{class:header} { margin-bottom: 20px; }' +
+	'.{class:container} { font-size: 14px; line-height: 20px; padding: 20px; margin-top: 30px; }' +
+	'.{class:submit}, .{class:header} { margin-bottom: 20px; }' +
 	'.{class:auth} { float: right; }' +
 	'.{class:title} { color: #424257; font: 28px Arial; line-height: 32px; font-weight: bold; float: left; }' +
 	'.{class:contestants} { border-top: 1px solid #dddddd; }' +
 	'.{class:content} { margin-top: 10px; }' +
+	'.{class:footer} { width: 960px; height: 50px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
+	'.{class:right} { display: none; }' +
 	'.{class:main} { width: 100%; }' +
 	'.{class:stage0} .{class:mainWrapper} { margin: 0 auto;  width: 600px; }' +
 	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; margin-left: 25px; }' +
