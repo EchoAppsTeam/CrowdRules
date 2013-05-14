@@ -569,7 +569,7 @@ CrowdRules.methods._getMetadata = function() {
 		'<div class="echo-crowd-rules-intro1-sectionD">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
 				'<div class="echo-crowd-rules-intro1-section-title">Step 3</div>' +
-				'<div class="echo-crowd-rules-intro1-section-textbox-content">Check back on <strong>May 28th</strong> to see if you’ve made the list of businesses eligible to receive funding and then start soliciting support. Alert your family, your friends, your customers, your neighbors – anybody and everybody – because only the 10 teams with the most votes will have the ability to make it to the final round!</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Check back on <strong>May 28th</strong> to see if you’ve made the list of businesses eligible to compete for the $50,000 prize and then start soliciting support. Alert your family, your friends, your customers, your neighbors – anybody and everybody – because only the 10 teams with the most votes will have the ability to make it to the final round!</div>' +
 			'</div>' +
 		'</div>',
 	"css":
