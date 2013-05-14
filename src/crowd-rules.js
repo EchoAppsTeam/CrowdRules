@@ -165,6 +165,7 @@ CrowdRules.templates.user =
 		'<div class="echo-clear"></div>' +
 	'</div>' +
 	'<div class="{class:footer}">' +
+		'<div class="{class:conclusion}"></div>' +
 		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
@@ -189,6 +190,7 @@ CrowdRules.templates.admin =
 		'<div class="echo-clear"></div>' +
 	'</div>' +
 	'<div class="{class:footer}">' +
+		'<div class="{class:conclusion}"></div>' +
 		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
@@ -213,6 +215,7 @@ CrowdRules.templates.permalink =
 		'<div class="echo-clear"></div>' +
 	'</div>' +
 	'<div class="{class:footer}">' +
+		'<div class="{class:conclusion}"></div>' +
 		'<img src="http://cdn.echoenabled.com/apps/echo/crowd-rules/images/crowd-rules-challenge-footer-960x50.jpg" width="960" height="50">' +
 	'</div>';
 
@@ -325,6 +328,12 @@ CrowdRules.renderers.intro = function(element) {
 			element.empty().append(metadata.content)
 		)
 		: element.hide();
+};
+
+CrowdRules.renderers.conclusion = function(element) {
+	var metadata = this.get("metadata.conclusion");
+	element.empty();
+	return metadata.visible ? element.append(metadata.content) : element.hide();
 };
 
 CrowdRules.renderers.title = function(element) {
@@ -541,8 +550,7 @@ CrowdRules.methods._getMetadata = function() {
 	"content":
 		'<div class="echo-crowd-rules-intro1-sectionA">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
-				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd!</div>' +
-				'<div style="padding-top: 1em;" class="echo-crowd-rules-intro1-section-title">From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
+				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd! From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
 				'<iframe style="padding-top: 26px;" width="880" height="495" src="http://www.youtube.com/embed/h0gpE4WHpqI" frameborder="0" allowfullscreen></iframe>' +
 			'</div>' +
 		'</div>' +
@@ -575,7 +583,11 @@ CrowdRules.methods._getMetadata = function() {
 		'.echo-crowd-rules-intro1-sectionB { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionB-background.jpg"); }' +
 		'.echo-crowd-rules-intro1-sectionC { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionC-background.png"); }' +
 		'.echo-crowd-rules-intro1-sectionD { background-image:url("http://cdn.echoenabled.com/apps/echo/crowd-rules/images/sectionD-background.jpg"); }'
-	}
+},
+"conclusion": {
+	"visible": !this.user.is("admin"),
+	"content": "Want to learn more about the show? Go to <a href=\"http://crowdrules.cnbc.com/\">crowdrules.cnbc.com</a>. And don't forget to tune in to <strong>Crowd Rules</strong> on CNBC Prime Tuesdays at 9 ET/PT!"
+}
 // End of Stage 0
 },{
 // Stage 1
@@ -633,6 +645,10 @@ CrowdRules.methods._getMetadata = function() {
 "intro": {
 	"visible": false,
 	"content": "Stage 2 'Voting' description"
+},
+"conclusion": {
+	"visible": !this.user.is("admin"),
+	"content": "Want to learn more about the show? Go to <a href=\"http://crowdrules.cnbc.com/\">crowdrules.cnbc.com</a>. And don't forget to tune in to <strong>Crowd Rules</strong> on CNBC Prime Tuesdays at 9 ET/PT!"
 }
 // End of Stage 1
 }, {
@@ -693,6 +709,10 @@ CrowdRules.methods._getMetadata = function() {
 "intro": {
 	"visible": false,
 	"content": "Stage 3 'Finalists' description"
+},
+"conclusion": {
+	"visible": !this.user.is("admin"),
+	"content": "Want to learn more about the show? Go to <a href=\"http://crowdrules.cnbc.com/\">crowdrules.cnbc.com</a>. And don't forget to tune in to <strong>Crowd Rules</strong> on CNBC Prime Tuesdays at 9 ET/PT!"
 }
 // End of Stage 2
 }, {
@@ -730,6 +750,10 @@ CrowdRules.methods._getMetadata = function() {
 "intro": {
 	"visible": false,
 	"content": "Stage 4 'Final voting' description"
+},
+"conclusion": {
+	"visible": !this.user.is("admin"),
+	"content": "Want to learn more about the show? Go to <a href=\"http://crowdrules.cnbc.com/\">crowdrules.cnbc.com</a>. And don't forget to tune in to <strong>Crowd Rules</strong> on CNBC Prime Tuesdays at 9 ET/PT!"
 }
 // End of Stage 3
 }, {
@@ -770,6 +794,10 @@ CrowdRules.methods._getMetadata = function() {
 "intro": {
 	"visible": false,
 	"content": "Stage 5 'Winner' description"
+},
+"conclusion": {
+	"visible": !this.user.is("admin"),
+	"content": "Want to learn more about the show? Go to <a href=\"http://crowdrules.cnbc.com/\">crowdrules.cnbc.com</a>. And don't forget to tune in to <strong>Crowd Rules</strong> on CNBC Prime Tuesdays at 9 ET/PT!"
 }
 // End of Stage 4
 }];
@@ -782,10 +810,12 @@ CrowdRules.css =
 	'.{class:title} { color: #424257; font: 28px Arial; line-height: 32px; font-weight: bold; float: left; }' +
 	'.{class:contestants} { border-top: 1px solid #dddddd; }' +
 	'.{class:content} { margin-top: 10px; }' +
-	'.{class:footer} { width: 960px; height: 50px; }' +
+	'.{class:footer} { width: 960px; }' +
 	'.{class:main}, .{class:right} { float: left; }' +
 	'.{class:right} { display: none; }' +
 	'.{class:main} { width: 100%; }' +
+	'.{class:conclusion} { margin: 0px 30px 20px 45px; font-size: 20px; line-height: 32px; }' +
+	'.{class:footer} .{class:conclusion} a { color: #476CB8; }' +
 	'.{class:stage0} .{class:mainWrapper} { margin: 0 auto;  width: 600px; }' +
 	'.{class:withSidebar} .{class:mainWrapper} { margin-right: 350px; margin-left: 25px; }' +
 	'.{class:withSidebar} .{class:right} { display: block; margin-left: -350px; }' +
