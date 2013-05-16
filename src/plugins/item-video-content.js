@@ -27,7 +27,7 @@ plugin.component.renderers.text = function(element) {
 		data.user = data.personalName || data.user;
 		data.email = isAdmin ? data.personalEmail : "";
 		el = $(this.substitute({
-			"template": plugin.templates.content(data.previewURL ? "preview" : "full"),
+			"template": plugin.templates.content(data.previewURL ? "preview" : "full", !!data.media),
 			"data": data
 		}));
 		$("." + this.cssPrefix + "business-name", el).click(function() {
@@ -69,14 +69,23 @@ plugin.component.renderers.buttons = function(element) {
 	return element;
 };
 
-plugin.templates.content = function(mode) {
+plugin.templates.content = function(mode, hasHTML) {
 	var embed = mode === "full"
 		? "{data:media}"
 		: '<img src="{data:previewURL}" class="{plugin.class:previewImg} echo-clickable" title="Click to play video">';
 	return '<div class="{plugin.class:container}">' +
 		'<div class="{plugin.class:business-name} echo-linkColor">{data:businessName}</div>' +
 		'<div class="{plugin.class:posted-by}">Posted by: <span class="echo-linkColor">{data:user}</span> <span class="{plugin.class:email}">({data:email})</span></div>' +
-		'<div class="{plugin.class:embed-code}">' + embed + '</div>' +
+		(hasHTML
+			? '<div class="{plugin.class:embed-code}">' + embed + '</div>'
+			: '<div class="{plugin.class:link}">Video URL: ' +
+				Echo.Utils.hyperlink({
+					"href": "{data:link}",
+					"caption": "{data:link}",
+					"target": "_blank"
+				}) +
+			'</div>'
+		) +
 		'<div class="{plugin.class:description}">{data:description}</div>' +
 	'</div>';
 };

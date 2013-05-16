@@ -86,6 +86,7 @@ plugin.events = {
 			"personalEmail": valueOf("personalEmail"),
 			"user": submit.user.get("name"),
 			"media": self.get("mediaContent", ""),
+			"link": self.get("link", ""),
 			"previewURL": self.get("previewURL", ""),
 			"videoWidth": self.config.get("videoMaxWidth"),
 			"previewWidth": self.get("previewWidth", ""),
@@ -199,6 +200,7 @@ plugin.renderers.videoURL = function(element) {
 		self.set("lastProcessedLink", link);
 		element.parent().removeClass(self.component.cssPrefix + "mandatory");
 		preview.show().html('<span>' + self.labels.get("processingMedia") + '</span>');
+		self.set("link", link);
 		$.get("http://api.embed.ly/1/oembed", {
 			"key": "20f6f47f7e584690ac9c29524a43fa55",
 			"url": link,
@@ -215,7 +217,6 @@ plugin.renderers.videoURL = function(element) {
 					preview.append(response.html);
 					break;
 				default:
-					self.set("mediaContent", link);
 					preview.append('<span class="echo-streamserver-controls-submit-plugin-CustomSubmitForm-noMediaFound">' + self.labels.get('noMediaFound') + '</span>');
 			}
 		}, "jsonp");
