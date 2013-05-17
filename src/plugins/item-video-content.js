@@ -11,6 +11,10 @@ plugin.config = {
 	"previewMaxWidth": "402px"
 };
 
+plugin.init = function() {
+	this._unsubscribeMediaGallery();
+};
+
 plugin.component.renderers.text = function(element) {
 	var data, el, self = this;
 	var item = this.component;
@@ -44,6 +48,9 @@ plugin.component.renderers.text = function(element) {
 			.click(function() {
 				var container = $(this).parent();
 				container.empty().append(data.media);
+				self.component.events.publish({
+					"topic": "onRerender"
+				});
 			});
 		if (!isAdmin || !data.email) {
 			$("." + this.cssPrefix + "email", el).hide();
@@ -67,6 +74,39 @@ plugin.component.renderers.buttons = function(element) {
 		element.children(":first").hide();
 	}
 	return element;
+};
+
+plugin.methods._unsubscribeMediaGallery = function() {
+	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization");
+	if (!component) return;
+	component.manifest.renderers.media  = function(element) {
+		var plugin = this, item = this.component, handler;
+		var mediaItems = plugin.config.get("mediaSelector")(item.get("data.object.content"));
+		if (mediaItems.length) {
+			var config = $.extend(plugin.config.get("gallery"), {
+				"target": element,
+				"appkey": item.config.get("appkey"),
+				"elements": mediaItems,
+				"item": item
+			});
+			var mediaGallery = new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
+			$.each(mediaGallery.subscriptionIDs, function(id) {
+				var obj = $.grep(Echo.Events._subscriptions["Echo.UserSession.onInvalidate"].global.handlers, function(o) {
+					return o.id === id;
+				})[0];
+				if (obj && obj.id) {
+					Echo.Events.unsubscribe({
+						"handlerId": obj.id
+					});
+					handler = obj.handler;
+					return false;
+				}
+			});
+		} else {
+			element.hide();
+		}
+		return element;
+	};
 };
 
 plugin.templates.content = function(mode, hasHTML) {

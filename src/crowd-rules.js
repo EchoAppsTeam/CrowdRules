@@ -22,7 +22,7 @@ CrowdRules.config = {
 			"emptyStream": "No videos at this time..."
 		}
 	},
-	"targetURL": "http://cnbc.com/crowdrules",
+	"targetURL": "http://test.cnbc.com/crowdrules",
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,
@@ -111,6 +111,9 @@ CrowdRules.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
+}, {
+	"component": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization",
+	"url": "{config:cdnBaseURL.sdk}/streamserver/plugins/pinboard-visualization.js"
 }];
 
 CrowdRules.events = {
@@ -265,7 +268,7 @@ CrowdRules.renderers.permalinkContainer = function(element) {
 		"name": "WithoutMore"
 	});
 	metadata.plugins = $.grep(metadata.plugins, function(plugin) {
-		return plugin.name !== "ItemWinner";
+		return plugin.name !== "ItemWinner" && plugin.name !== "PinboardVisualization";
 	});
 	this._toggleStream(element, $.extend(true, metadata, {
 		"query": this.substitute({
@@ -456,9 +459,9 @@ CrowdRules.methods._toggleStream = function(container, config) {
 			"context": this.config.get("context"),
 			"ready": function() {
 				self.set("query", this.config.get("query"));
-				container.append(this.config.get("target"));
 			}
 		}, this.config.get("stream"), config));
+		container.append(this.stream.config.get("target"));
 	} else {
 		container.append(stream.config.get("target"));
 		// TODO: replace it with extend-like functionality
@@ -497,6 +500,7 @@ CrowdRules.methods._toggleSorter = function(container, config) {
 };
 
 CrowdRules.methods._getMetadata = function() {
+	var self = this;
 	var authLauncher = $.proxy(this.addAuthPopupLauncher, this);
 	var identityManagerItem = this.config.get("identityManager");
 	return [{
@@ -604,11 +608,21 @@ CrowdRules.methods._getMetadata = function() {
 			"plugins": [{
 				"name": "Moderation"
 			}, {
+				"name": "VideoContent"
+			}, {
+				"name": "PinboardVisualization",
+				"columnWidth": 435,
+				"enabled": !this.user.is("admin"),
+				"mediaSelector": function(content) {
+					var obj = $.parseJSON(content);
+					return $("<img src=" + obj.previewURL + ">").on("load", function() {
+						$(this).css("display", "none");
+					});
+				}
+			}, {
 				"name": "Vote",
 				"launcher": authLauncher,
 				"sharing": this.config.get("sharing")
-			}, {
-				"name": "VideoContent"
 			}]
 		},
 		"tab": {
@@ -829,6 +843,14 @@ CrowdRules.css =
 	// stream control styles
 	'.{class:container} .echo-streamserver-controls-stream-item-button { font-weight: normal!important; }' +
 	'.{class:main} .echo-streamserver-controls-stream { margin-left: 175px; width: 570px; }' +
+	// stage 1 && Pinboard styles
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream { margin-left: 10px; margin-right: 0; width: auto; margin-top: 10px; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-content { margin-right: 13px; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-header { height: 0; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-plugin-Vote-container { position: absolute; right: 3px; top: 5px; width: auto; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-plugin-Vote-container div { float: left; margin-left: 7px; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-plugin-Vote-container div.echo-streamserver-controls-stream-item-plugin-Vote-votesCount { margin-top: 2px; }' +
+	'.{class:stage1} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-avatar-wrapper { width: 100%; margin: 0 }' +
 	'.{class:main} .echo-streamserver-controls-stream-item-plugin-Reply-replyForm .echo-streamserver-controls-submit { width: auto; margin-left: 68px; }' +
 	'.{class:withSidebar} .{class:main} .echo-streamserver-controls-stream, .{class:withSidebar} .{class:main} .echo-streamserver-controls-submit { width: auto; margin-left: 0; }' +
 	'.{class:main} .echo-streamserver-controls-stream-header { display: none; }' +
