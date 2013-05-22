@@ -23,6 +23,7 @@ CrowdRules.config = {
 		}
 	},
 	"targetURL": "",
+	"useTracking": false,
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,
@@ -72,6 +73,7 @@ CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
 	this.render();
 	this.ready();
+	this._initTracking();
 	if (!this.user.is("admin")) {
 		var handler = this._removeUserValidationFrom(this);
 		this._removeUserValidationFrom(Echo.Loader.canvases[0]);
@@ -413,6 +415,19 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 		})
 	});
 	return element;
+};
+
+CrowdRules.methods._initTracking = function() {
+	if (!this.config.get("useTracking")) return;
+	$("<iframe>")
+		.attr({
+			"width": 1,
+			"height": 1,
+			"frameboarder": 0,
+			"style": "display:none",
+			"src": "http://2187941.fls.doubleclick.net/activityi;src=2187941;type=cnbcp125;cat=crowd771;ord=" + (Math.random() * 10000000000000) + "?"
+		})
+		.insertAfter(this.config.get("target"));
 };
 
 CrowdRules.methods._removeUserValidationFrom = function() {

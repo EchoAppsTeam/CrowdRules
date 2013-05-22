@@ -11,6 +11,7 @@ Echo.Loader.initApplication({
 	"config": {
 		"target": document.getElementById("echo-crowd-rules-app-content"),
 		"appkey": "echo.echo.streamserver.cnbc.prod",
+		"useTracking": /(wwww\.)?cnbc\.com/.test(document.domain),
 		"rpxAppName": "cnbc-echo",
 		"targetURL": "http://cnbc.com/crowdrules",
 		"stageIndex": typeof stage !== "undefined" ? stage : 0
