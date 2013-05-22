@@ -22,7 +22,7 @@ CrowdRules.config = {
 			"emptyStream": "No videos at this time..."
 		}
 	},
-	"targetURL": "http://cnbc.com/crowdrules",
+	"targetURL": "",
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,

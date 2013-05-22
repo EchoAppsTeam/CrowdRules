@@ -163,6 +163,9 @@ module.exports = function(grunt) {
 				src = src.replace(
 					/cdn\.echoenabled\.com\/apps\/echo\/crowd-rules/g,
 					config.domain
+				).replace(
+					/(targetURL\":\s*?)(\"https?:\/\/)cnbc\.com(.)/g,
+					"$1$2test\.cnbc\.com$3"
 				);
 			}
 			return src;
