@@ -554,7 +554,7 @@ CrowdRules.methods._getMetadata = function() {
 	"content":
 		'<div class="echo-crowd-rules-intro1-sectionA">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
-				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd! From now until May 27th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
+				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd! From now until June 4th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
 				'<iframe style="padding-top: 26px;" width="880" height="495" src="http://www.youtube.com/embed/h0gpE4WHpqI" frameborder="0" allowfullscreen></iframe>' +
 			'</div>' +
 		'</div>' +
@@ -573,7 +573,7 @@ CrowdRules.methods._getMetadata = function() {
 		'<div class="echo-crowd-rules-intro1-sectionD">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
 				'<div class="echo-crowd-rules-intro1-section-title">Step 3</div>' +
-				'<div class="echo-crowd-rules-intro1-section-textbox-content">Check back on <strong>May 28th</strong> to see if you’ve made the list of businesses eligible to compete for the $50,000 prize and then start soliciting support. Alert your family, your friends, your customers, your neighbors – anybody and everybody – because only the 10 teams with the most votes will have the ability to make it to the final round!</div>' +
+				'<div class="echo-crowd-rules-intro1-section-textbox-content">Check back on <strong>June 5th</strong> to see if you’ve made the list of businesses eligible to compete for the $50,000 prize and then start soliciting support. Alert your family, your friends, your customers, your neighbors – anybody and everybody – because only the 10 teams with the most votes will have the ability to make it to the final round!</div>' +
 			'</div>' +
 		'</div>',
 	"css":
