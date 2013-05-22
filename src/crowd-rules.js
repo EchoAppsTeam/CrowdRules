@@ -23,7 +23,6 @@ CrowdRules.config = {
 		}
 	},
 	"targetURL": "",
-	"useTracking": false,
 	"stageIndex": 0,
 	"identityManager": {
 		"width": 270,
@@ -73,7 +72,6 @@ CrowdRules.init = function() {
 	this.set("metadata", this._getMetadata()[this.config.get("stageIndex")]);
 	this.render();
 	this.ready();
-	this._initTracking();
 	if (!this.user.is("admin")) {
 		var handler = this._removeUserValidationFrom(this);
 		this._removeUserValidationFrom(Echo.Loader.canvases[0]);
@@ -415,19 +413,6 @@ CrowdRules.renderers.finalistActivityStream = function(element) {
 		})
 	});
 	return element;
-};
-
-CrowdRules.methods._initTracking = function() {
-	if (!this.config.get("useTracking")) return;
-	$("<iframe>")
-		.attr({
-			"width": 1,
-			"height": 1,
-			"frameboarder": 0,
-			"style": "display:none",
-			"src": "http://2187941.fls.doubleclick.net/activityi;src=2187941;type=cnbcp125;cat=crowd771;ord=" + (Math.random() * 10000000000000) + "?"
-		})
-		.insertAfter(this.config.get("target"));
 };
 
 CrowdRules.methods._removeUserValidationFrom = function() {
@@ -860,7 +845,7 @@ CrowdRules.css =
 	'.{class:main} .echo-streamserver-controls-stream { margin-left: 175px; width: 570px; }' +
 	// stage 1 && Pinboard styles
 	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream { margin-left: 10px; margin-right: 0; width: auto; margin-top: 10px; }' +
-	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-content { margin-right: 13px; }' +
+	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-content { margin-right: 13px; border: 1px solid #f2f2f2; }' +
 	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-header { height: 0; }' +
 	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-plugin-Vote-container { position: absolute; right: 3px; top: 5px; width: auto; }' +
 	'.{class:stage1} .{class:main} .echo-streamserver-controls-stream-plugin-PinboardVisualization .echo-streamserver-controls-stream-item-plugin-Vote-container div { float: left; margin-left: 7px; }' +
