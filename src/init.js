@@ -15,7 +15,7 @@ Echo.Loader.initApplication({
 		"targetURL": "http://cnbc.com/crowdrules",
 		"stageIndex": typeof stage !== "undefined" ? stage : 0,
 		"ready": function() {
-			if (/(wwww\.)?cnbc\.com/.test(document.domain)) {
+			if (/(www\.)?cnbc\.com/.test(document.domain)) {
 				Echo.jQuery("<iframe>")
 					.attr({
 						"width": 1,
