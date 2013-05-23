@@ -554,7 +554,7 @@ CrowdRules.methods._getMetadata = function() {
 	"content":
 		'<div class="echo-crowd-rules-intro1-sectionA">' +
 			'<div class="echo-crowd-rules-intro1-section-textbox">' +
-				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd! From now until June 4th, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
+				'<div class="echo-crowd-rules-intro1-section-title">Could your small business use $50,000? All it takes is the ability to win over the crowd! From now until June 3rd, you can enter your business in the Crowd Rules $50,000 Challenge.</div>' +
 				'<iframe style="padding-top: 26px;" width="880" height="495" src="http://www.youtube.com/embed/h0gpE4WHpqI" frameborder="0" allowfullscreen></iframe>' +
 			'</div>' +
 		'</div>' +
